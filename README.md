@@ -25,3 +25,4 @@ Erst danach öffnet sich die eigentliche Führungsübersicht und der Führungsdi
 - konfigurierbarer Fahrzeug-/Funkrufname ohne Fahrzeugdatenbank
 
 Hinweis: Prototyp zur Führungsunterstützung. Keine autonome taktische Entscheidung und keine echte Alarmierungs-/Funkanbindung.
+\n\n### v8\nFehlerbehebung für GitHub Pages/Browser: DOM-Elemente werden explizit angesprochen, sodass „Einsatz starten“ zuverlässig in die Einsatzübersicht wechselt.\n

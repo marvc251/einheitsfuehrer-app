@@ -161,10 +161,24 @@ const steps=[
 function persist(){localStorage.setItem("currentCrew",JSON.stringify(current));localStorage.setItem("incidentLog",JSON.stringify(log));localStorage.setItem("leadershipAnswers",JSON.stringify(answers));localStorage.setItem("leadershipStep",step);localStorage.setItem("asTeams",JSON.stringify(asTeams))}
 function addLog(t){log.unshift({time:new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}),text:t});persist();renderLog()}
 function toast(t){let x=document.getElementById("toast");x.textContent=t;x.style.display="block";setTimeout(()=>x.style.display="none",1700)}
-function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));if(id==="home")navHome.classList.add("active"); if(id==="start"){}if(id==="kraefte")navCrew.classList.add("active");if(id==="doku")navDoku.classList.add("active");if(id==="settings")navSettings.classList.add("active");if(id==="atemschutz"){}if(id==="dialog")renderDialog();renderAll();scrollTo(0,0)}
+function show(id){
+ document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+ const screen=document.getElementById(id);
+ if(!screen)return;
+ screen.classList.add("active");
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+ if(id==="home")document.getElementById("navHome").classList.add("active");
+ if(id==="kraefte")document.getElementById("navCrew").classList.add("active");
+ if(id==="doku")document.getElementById("navDoku").classList.add("active");
+ if(id==="settings")document.getElementById("navSettings").classList.add("active");
+ if(id==="dialog")renderDialog();
+ renderAll();
+ window.scrollTo(0,0);
+}
 function renderDialog(){
  let s=steps[step], p=document.getElementById("progress");p.innerHTML=steps.map((_,i)=>`<i class="seg ${i<step?'done':''} ${i===step?'now':''}"></i>`).join("");
- stepLabel.textContent=`Schritt ${step+1} von ${steps.length} · ${s.name}`;question.textContent=s.q;
+ document.getElementById("stepLabel").textContent=`Schritt ${step+1} von ${steps.length} · ${s.name}`;
+ document.getElementById("question").textContent=s.q;
  let c=document.getElementById("content");
  if(s.type==="text") c.innerHTML=`<textarea id="answer" rows="7" placeholder="${s.placeholder}">${answers[s.key]||""}</textarea>`;
  if(s.type==="choices") c.innerHTML=s.opts.map(o=>`<label class="choice"><input type="radio" name="choice" value="${o}" ${(answers[s.key]===o)?'checked':''}> ${o}</label>`).join("");
@@ -251,7 +265,27 @@ function renderRoles(){rolesDiv.innerHTML=roles.map(r=>`<div class="row"><span>$
 function toggleCrew(){crewEdit.style.display=crewEdit.style.display==="none"?"block":"none";checks.innerHTML=roles.map(r=>`<label class="choice"><input type="checkbox" data-role="${r}" ${current[r]?'checked':''} ${r==="Einheitsführer"?'disabled':''}>${r}${r==="Einheitsführer"?" (immer vorhanden)":""}</label>`).join("")}
 function saveCrew(){document.querySelectorAll("#checks input").forEach(i=>current[i.dataset.role]=i.checked);current.Einheitsführer=true;addLog("Aktuelle Einsatzbesetzung geändert.");toast("Besetzung übernommen");renderRoles()}
 function renderLog(){timeline.innerHTML=log.length?log.map(e=>`<div class="event"><b>${e.time}</b><div>${e.text}</div></div>`).join(""):'<div class="muted">Noch keine Einträge.</div>'}
-function renderAll(){renderRoles();renderLog();renderAS();renderSettings();renderIncident();if(incident){homeKeyword.textContent=incident.keyword;homeAddress.textContent=incident.street+", "+incident.city;homeObject.textContent=incident.object||"–";}}homeLage.textContent=answers.lage||"Noch keine Lage erfasst.";homeStep.textContent=`${step+1} · ${steps[step].name}`;homeQuestion.textContent=steps[step].q}
+function renderAll(){
+ renderRoles();
+ renderLog();
+ renderAS();
+ renderSettings();
+ renderIncident();
+ const hk=document.getElementById("homeKeyword");
+ const ha=document.getElementById("homeAddress");
+ const ho=document.getElementById("homeObject");
+ const hl=document.getElementById("homeLage");
+ const hs=document.getElementById("homeStep");
+ const hq=document.getElementById("homeQuestion");
+ if(incident){
+   if(hk)hk.textContent=incident.keyword;
+   if(ha)ha.textContent=incident.street+", "+incident.city;
+   if(ho)ho.textContent=incident.object||"–";
+ }
+ if(hl)hl.textContent=answers.lage||"Noch keine Lage erfasst.";
+ if(hs)hs.textContent=`${step+1} · ${steps[step].name}`;
+ if(hq)hq.textContent=steps[step].q;
+}
 
 function startIncident(){
  const keyword=document.getElementById("startKeyword").value.trim();
@@ -277,6 +311,7 @@ function renderIncident(){
  }
 }
 if(!incident){setTimeout(()=>show("start"),0)}
-renderAll();renderDialog();
+renderAll();
+if(incident)renderDialog();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script></body></html>
