@@ -1,782 +1,124 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#071426">
-<link rel="manifest" href="manifest.json">
-<title>Einheitsführer-App</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071426"><link rel="manifest" href="manifest.json"><title>Einheitsführer-App</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3fZfQ0KJwY6v7cQqY4pXkR2p8fG2s=" crossorigin="">
 <style>
-:root{--bg:#071426;--p:#0d2038;--p2:#102945;--line:#1e3b5d;--txt:#f5f8fc;--muted:#9db0c5;--blue:#1877e8;--red:#d71920;--green:#20b26b;--yellow:#e5ad25;--orange:#ef8b2c}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.app{max-width:520px;margin:auto;min-height:100vh;background:linear-gradient(#071426,#091a2e)}
-header{padding:calc(11px + env(safe-area-inset-top)) 16px 10px;background:#071426ee;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:8}.brand{font-size:17px;font-weight:800}.sub{font-size:11px;color:var(--muted);margin-top:2px}.incidentBar{display:none;margin-top:9px;background:#0d2038;border:1px solid #244667;border-radius:10px;padding:7px 9px;font-size:11px;line-height:1.25;overflow:hidden}.incidentBar.active{display:block}.incidentBarTop{display:flex;align-items:center;gap:6px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.incidentBarTop .keyword{overflow:hidden;text-overflow:ellipsis}.incidentBarMeta{display:flex;gap:10px;margin-top:4px;color:#c7d8e8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.incidentBarMeta span{overflow:hidden;text-overflow:ellipsis}.incidentBar .timer{font-weight:800;color:#fff}
-main{padding:12px 14px 100px}.screen{display:none}.screen.active{display:block}
-.banner{background:linear-gradient(135deg,#b70f18,#e3292f);border-radius:16px;padding:14px;margin-bottom:12px}.banner b{font-size:10px}.banner h1{margin:7px 0 2px;font-size:21px}.banner p{margin:0;font-size:12px}
-.card{background:var(--p);border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:11px}.card h2{font-size:13px;margin:0 0 9px}.muted{color:var(--muted)}.big{font-size:18px;font-weight:750;line-height:1.35}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.action,.btn{border-radius:12px;font:inherit;font-weight:750}.action{background:var(--p2);border:1px solid var(--line);color:var(--txt);padding:12px;text-align:left;min-height:72px}.action.primary{background:var(--blue);border-color:#4297f7}.action.warn{background:#5b3a0e;border-color:#8b6420}.action small{display:block;color:#bfd1e4;font-weight:500;margin-top:4px}
-.btn{border:0;background:var(--blue);color:#fff;padding:11px 13px}.btn.secondary{background:#173452;border:1px solid var(--line)}.btn.danger{background:var(--red)}.btn.full{width:100%;margin-top:9px}
-.row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #18324f;align-items:center}.row:last-child{border:0}.status{display:flex;align-items:center;gap:6px;font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block}.dot.off{background:#65798e}.dot.warn{background:var(--yellow)}.dot.red{background:var(--red)}
-.progress{display:flex;gap:4px;margin:8px 0 14px}.seg{height:5px;flex:1;border-radius:5px;background:#1a3551}.seg.done{background:var(--blue)}.seg.now{background:#62aaf4}
-.step{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}.question{font-size:22px;font-weight:800;line-height:1.2;margin:6px 0 13px}
-textarea,input,select{width:100%;background:#07182a;border:1px solid var(--line);color:white;border-radius:10px;padding:11px;font:inherit}textarea{resize:vertical}label{font-size:11px;color:var(--muted);display:block;margin:10px 0 5px}
-.choice{display:flex;align-items:center;gap:9px;background:#102945;border:1px solid var(--line);padding:10px;border-radius:10px;margin:7px 0;color:var(--txt)}.choice input{width:auto}
-.badge{padding:4px 7px;border-radius:999px;font-size:10px;font-weight:800;background:#173452;color:#dbe9f8}.badge.red{background:#5e1a20}.badge.yellow{background:#5a4613}.badge.green{background:#123f2b}.badge.blue{background:#153b62}
-.sectionTitle{font-size:11px;letter-spacing:.6px;color:#bfd1e4;font-weight:800;margin-bottom:8px}
-.event{padding:8px 0 8px 14px;border-left:2px solid #2c537b;margin-left:4px}.event b{font-size:10px;color:var(--muted)}.event .meta{font-size:11px;color:var(--muted)}
-.role{padding:8px 0;border-bottom:1px solid #18324f}.role:last-child{border:0}.roleTop{display:flex;justify-content:space-between;align-items:center}.subrole{padding:7px 0 0 20px;font-size:12px;color:#d7e3ef}.subrole span{color:var(--muted)}
-.feedback,.commandCard{background:#07182a;border:1px solid #244667;border-radius:11px;padding:10px;margin:8px 0}.feedback .meta,.commandCard .meta{font-size:10px;color:var(--muted)}.feedback .text,.commandCard .text{margin-top:4px;font-size:13px}
-.quick{border:1px solid #8b6420;background:#3f2d0f;border-radius:13px;padding:12px;margin-bottom:11px}
-.alert{border:1px solid #7a4c16;background:#3d2b0e;border-radius:11px;padding:10px;font-size:12px}.info{border:1px solid #244667;background:#102945;border-radius:11px;padding:10px;font-size:11px}
-.asCard{background:#07182a;border:1px solid #244667;border-radius:12px;padding:11px;margin:8px 0}.asHead{display:flex;justify-content:space-between;gap:8px}.asName{font-weight:800}.asPeople{font-size:11px;color:#c7d8e8;margin:4px 0 8px}
-.photoBox{border:1px dashed #3b6386;border-radius:11px;padding:10px;text-align:center;margin-top:8px}.photoBox img{max-width:100%;border-radius:9px;margin-top:8px}
-.nav{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:auto;background:#071426f5;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:6px 5px calc(6px + env(safe-area-inset-bottom));z-index:10}.nav button{border:0;background:none;color:var(--muted);font:inherit;font-size:10px}.nav button.active{color:white;font-weight:800}.nav b{display:block;font-size:17px}
-.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:#173452;border:1px solid var(--line);padding:9px 13px;border-radius:999px;display:none;z-index:20;font-size:11px;max-width:90%;text-align:center}
-.modal{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;z-index:30}.modal.show{display:flex}.sheet{background:#0d2038;border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:16px;width:100%;max-width:520px;margin:auto;max-height:86vh;overflow:auto}.sheet h2{margin:0 0 7px;font-size:16px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.timer{font-variant-numeric:tabular-nums}.hide{display:none}
-@media (max-width:360px){.incidentBarMeta{gap:6px;font-size:10px}.incidentBar{padding:6px 8px}}@media print{body{background:#fff;color:#111}.app{max-width:none;background:#fff}.nav,header,.btn,.action,.banner{display:none!important}.screen{display:none!important}#report{display:block!important}.card{background:#fff;border:1px solid #ccc;color:#111}.muted{color:#555}.row{border-color:#ddd}.event{border-color:#777}main{padding:0}}
-</style>
-
-<style id="v12-enhancements">
-.v12panel{background:#0b1b2e;border:1px solid #274765;border-radius:12px;padding:12px;margin:10px 0}
-.v12grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v12grid .wide{grid-column:1/-1}
-.v12btn{min-height:44px;border:1px solid #315879;border-radius:10px;background:#123152;color:#fff;padding:9px 11px;font-weight:700}
-.v12btn.danger{background:#541c25;border-color:#8b3845}.v12btn.ok{background:#123f34;border-color:#2d705d}
-.v12small{font-size:11px;color:#aebfd0}.v12row{display:flex;justify-content:space-between;gap:8px;align-items:center}
-.v12pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#173957;font-size:10px}
-.v12modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;z-index:9999}
-.v12modal.show{display:flex}.v12sheet{width:100%;max-width:720px;margin:auto;background:#091727;border:1px solid #2a4b68;border-radius:16px 16px 0 0;padding:14px}
-.v12sheet h3{margin:0 0 8px}.v12sheet textarea{width:100%;min-height:90px;background:#071426;color:#fff;border:1px solid #315879;border-radius:9px;padding:9px}
-@media(min-width:700px){.v12sheet{border-radius:16px;margin-bottom:20px}.v12modal{align-items:center}}
-</style>
-<style id="v13-styles">
-.v13-overview{background:#0b1b2e;border:1px solid #274765;border-radius:12px;padding:10px;margin:10px 0}
-.v13-title{font-size:13px;margin-bottom:8px}.v13-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-.v13-btn,.v13-action{min-height:44px;border:1px solid #315879;border-radius:10px;background:#123152;color:#fff;padding:8px;font-weight:700}
-.v13-section{border:1px solid #274765;background:#0b1b2e;border-radius:12px;padding:11px;margin:9px 0}
-.v13-person{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:7px;align-items:center;padding:7px 0;border-top:1px solid #1d3850}
-.v13-person input,.v13-field input,.v13-field select,.v13-field textarea{width:100%;box-sizing:border-box;background:#071426;color:#fff;border:1px solid #315879;border-radius:8px;padding:9px;font-size:16px}
-.v13-sub{padding-left:14px}.v13-muted{font-size:11px;color:#aebfd0}.v13-field{margin:8px 0}.v13-field label{display:block;font-size:11px;color:#aebfd0;margin-bottom:4px}
-.v13-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.v13-action.ok{background:#123f34}.v13-action.danger{background:#541c25;border-color:#8b3845}
-.v13-modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;z-index:9999;padding:12px}
-.v13-sheet{width:min(680px,100%);max-height:92vh;overflow:auto;background:#091727;border:1px solid #2a4b68;border-radius:16px;padding:14px}
-.v13-sheet h3{margin:0 0 8px}
-@media(max-width:360px){.v13-grid{gap:6px}.v13-btn{font-size:11px}}
-</style><style id="v14-styles">
-.v14-standard-names{margin-top:12px;padding-top:10px;border-top:1px solid #1e3b5d}.v14-standard-names h3{font-size:12px;margin:0 0 7px}
-.v14-name-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:7px;align-items:center;padding:6px 0}
-.v14-name-row input{font-size:16px}
-#home .v13-overview{margin-top:0}
+:root{--bg:#071426;--panel:#0d2038;--panel2:#102945;--line:#234463;--txt:#f6f9fc;--muted:#9db1c6;--blue:#1877e8;--red:#d71920;--green:#1fa96a;--yellow:#e5ad25;--orange:#ef8b2c}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{min-height:100vh}.app{max-width:540px;margin:auto;min-height:100vh;background:linear-gradient(#071426,#091b2f)}
+header{position:sticky;top:0;z-index:1000;padding:calc(9px + env(safe-area-inset-top)) 12px 8px;background:#071426f7;border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}.brand{font-size:16px;font-weight:850}.sub{font-size:10px;color:var(--muted);margin-top:1px}
+.incidentBar{display:none;margin-top:7px;border:1px solid #4b5664;border-left:4px solid var(--red);border-radius:11px;background:#0c1e32;padding:8px 9px}.incidentBar.active{display:block}.ib1{font-weight:850;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ib2{font-size:11px;color:#d8e5f1;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ib3{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px;font-size:10px;color:#c0d2e3}.ib3 .timer{font-weight:850;color:#fff}
+main{padding:11px 12px calc(88px + env(safe-area-inset-bottom))}.screen{display:none}.screen.active{display:block}.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:13px;margin-bottom:10px}.card h2{font-size:13px;margin:0 0 8px}.muted{color:var(--muted);font-size:11px}.banner{background:linear-gradient(135deg,#a80f17,#df2c33);border-radius:15px;padding:13px;margin-bottom:10px}.banner b{font-size:10px}.banner h1{font-size:20px;margin:6px 0 2px}.banner p{font-size:11px;margin:0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.action,.btn{font:inherit;font-weight:780;border-radius:12px}.action{min-height:72px;text-align:left;padding:11px;background:var(--panel2);border:1px solid var(--line);color:#fff}.action.primary{background:var(--blue);border-color:#4a9cf1}.action.warn{background:#51390d;border-color:#89671f}.action small{display:block;color:#c1d2e3;font-weight:500;margin-top:3px}.btn{border:0;background:var(--blue);color:#fff;padding:11px 13px}.btn.secondary{background:#173653;border:1px solid var(--line)}.btn.danger{background:var(--red)}.btn.green{background:#125036}.btn.full{width:100%;margin-top:8px}.row{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid #193550}.row:last-child{border-bottom:0}.badge{font-size:10px;font-weight:850;border-radius:999px;padding:4px 7px;background:#173653}.badge.red{background:#5c1b22}.badge.yellow{background:#5a4615}.badge.green{background:#12452f}.badge.blue{background:#173f66}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:5px}.dot.red{background:var(--red)}.dot.yellow{background:var(--yellow)}.dot.gray{background:#6c7e91}
+input,select,textarea{width:100%;background:#07182a;color:#fff;border:1px solid var(--line);border-radius:10px;padding:11px;font:inherit}textarea{resize:vertical}label{display:block;color:var(--muted);font-size:10px;margin:9px 0 4px}.choice{display:flex;align-items:center;gap:8px;background:#102945;border:1px solid var(--line);padding:10px;border-radius:10px;margin:7px 0}.choice input{width:auto}.sectionTitle{font-size:10px;color:#c2d5e7;font-weight:850;letter-spacing:.6px;margin:10px 0 6px}.subindent{padding-left:20px}.personLine{display:grid;grid-template-columns:22px 1fr;gap:6px;align-items:center;margin:5px 0}.personLine input{font-size:15px}.hidden{display:none!important}
+.quick{border:1px solid #86631e;background:#3b2d10;border-radius:13px;padding:11px;margin-bottom:10px}.quick b{font-size:12px}.quickGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.quickGrid button{min-height:48px;border:1px solid #315879;background:#123152;color:#fff;border-radius:10px;font-weight:750}.info,.warnBox{padding:10px;border-radius:10px;font-size:11px}.info{background:#102945;border:1px solid var(--line)}.warnBox{background:#3d2d0e;border:1px solid #86631e}.feedback,.command,.asCard,.orderCard{background:#07182a;border:1px solid #294a68;border-radius:11px;padding:10px;margin:8px 0}.meta{font-size:10px;color:var(--muted)}.text{font-size:12px;margin-top:4px}.progress{display:flex;gap:4px;margin:7px 0 13px}.seg{height:5px;flex:1;background:#193650;border-radius:5px}.seg.done{background:var(--blue)}.seg.now{background:#6baef1}.step{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}.question{font-size:21px;font-weight:850;line-height:1.18;margin:6px 0 11px}.event{border-left:2px solid #315879;padding:7px 0 7px 11px;margin-left:4px}.event b{font-size:10px}.event .meta{margin-top:2px}.roleCard{border:1px solid var(--line);border-radius:12px;background:#0b1d31;padding:10px;margin:8px 0}.roleHead{display:flex;justify-content:space-between;align-items:center;gap:8px}.subrole{margin:7px 0 0 18px;padding-left:8px;border-left:2px solid #315879}.orderTop{display:flex;justify-content:space-between;gap:8px}.mapWrap{border-radius:12px;overflow:hidden;border:1px solid var(--line);height:380px;background:#12283e}.mapTools{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.mapTools button{min-height:44px;border:1px solid var(--line);background:#123152;color:#fff;border-radius:10px;font-weight:750}.mapLegend{font-size:10px;color:var(--muted);margin-top:7px}.version{border-bottom:1px solid #193550;padding:8px 0}.version:last-child{border:0}.photoGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.photoGrid img{width:100%;border-radius:9px}.signature{background:#fff;border-radius:10px;border:1px solid #789;touch-action:none;width:100%;height:170px}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:flex-end;z-index:2000}.modal.show{display:flex}.sheet{background:#0d2038;border:1px solid var(--line);border-radius:18px 18px 0 0;padding:15px;width:100%;max-width:540px;margin:auto;max-height:88vh;overflow:auto}.sheet h2{margin:0 0 7px;font-size:16px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.nav{position:fixed;bottom:0;left:0;right:0;z-index:1500;max-width:540px;margin:auto;background:#071426f7;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:5px 4px calc(5px + env(safe-area-inset-bottom));backdrop-filter:blur(10px)}.nav button{border:0;background:none;color:var(--muted);font:inherit;font-size:9px;padding:3px}.nav b{display:block;font-size:17px}.nav button.active{color:#fff;font-weight:850}.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#173653;border:1px solid var(--line);padding:9px 12px;border-radius:999px;z-index:3000;display:none;font-size:11px;max-width:90%;text-align:center}.tableish{display:grid;grid-template-columns:1fr 1.5fr auto;gap:6px;align-items:center;font-size:11px}.tableish>div{padding:6px 0;border-bottom:1px solid #193550}.dangerText{color:#ff9aa0}.okText{color:#72ddb0}
+@media(max-width:370px){.grid,.quickGrid{grid-template-columns:1fr}.ib3{gap:5px}.mapWrap{height:320px}}
+@media print{body{background:#fff;color:#111}.app{max-width:none;background:#fff}header,.nav,.btn,.action,.banner{display:none!important}.screen{display:none!important}#report{display:block!important}.card{background:#fff;color:#111;border:1px solid #bbb}.muted,.meta{color:#555}.event{border-color:#777}}
 </style></head>
 <body><div class="app">
-<header>
-<div class="brand">EINHEITSFÜHRER-APP</div>
-<div class="sub" id="unitSubtitle">Führungsunterstützung für den Einheitsführer</div>
-<div class="incidentBar" id="incidentBar" aria-live="polite">
-  <div class="incidentBarTop"><span>🔴</span><span id="topIncidentType">–</span><span>·</span><span id="topIncidentKeyword" class="keyword">Kein aktiver Einsatz</span></div>
-  <div style="margin-top:3px;color:#dbe9f8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Meldebild: <span id="topIncidentReport">–</span></div>
-  <div class="incidentBarMeta">
-    <span>📍 <span id="topIncidentAddress">–</span></span>
-    <span>🕐 <span id="topIncidentStart">–</span></span>
-    <span>⏱️ <span id="topIncidentDuration" class="timer">00:00:00</span></span>
-  </div>
-</div>
-</header><main>
-
-<section id="start" class="screen active">
-<div class="banner"><b>🚒 EINSATZ STARTEN</b><h1>Neuen Einsatz anlegen</h1><p>Die Einsatzdaten sind die erste Eingabe des Einheitsführers.</p></div>
-<div class="card">
-<h2>EINSATZDATEN</h2>
+<header><div class="brand">Einheitsführer-App</div><div class="sub">Feuerwehr Bebra · Einsatzführung</div><div id="incidentBar" class="incidentBar"><div class="ib1">🔴 <span id="ibKeyword">–</span></div><div class="ib2" id="ibMeldebild">Meldebild –</div><div class="ib3"><span id="ibLocation">📍 –</span><span id="ibStart">🕐 –</span><span class="timer" id="ibTimer">⏱️ +00:00:00</span></div></div></header>
+<main>
+<section id="home" class="screen active"><div id="homeContent"></div></section>
+<section id="start" class="screen"><div class="banner"><b>ERSTER SCHRITT</b><h1>🚨 Einsatz starten</h1><p>Der Einsatz beginnt erst nach dem Speichern dieser Angaben.</p></div><div class="card">
 <label>Einsatzart *</label><select id="startType"><option value="Brand">🔥 Brand</option><option value="Hilfeleistung">🛠️ Hilfeleistung</option><option value="Rettung">🚑 Rettung</option></select>
 <label>Einsatzstichwort *</label><select id="startKeyword"></select>
-<label>Meldebild *</label><select id="startReport"></select>
-<label>Straße / Hausnummer *</label><input id="startStreet" placeholder="Straße und Hausnummer">
-<label>PLZ / Ort *</label><input id="startCity" placeholder="z. B. 36179 Bebra">
-<label>Objekt / Zusatzinformation</label><input id="startObject" placeholder="z. B. Mehrfamilienhaus, Hinterhof …">
-<label>Besondere Hinweise</label><textarea id="startNotes" rows="3" placeholder="Weitere Informationen zum Einsatz …"></textarea>
-<button class="btn full" onclick="startIncident()">🔴 Einsatz starten</button>
-</div>
-<div class="card"><div class="info">Die Standardbesetzung wird beim Einsatzstart als aktuelle Einsatzbesetzung übernommen. Namen in der Kräfteübersicht sind optional.</div></div>
-</section>
-
-<section id="home" class="screen"><div id="v14HomeQuick" class="v13-overview">
-<div class="v13-title"><strong>⚡ Einsatz-Schnellübersicht</strong></div>
-<div class="v13-grid">
-<button type="button" class="v13-btn" onclick="show('dialog')">🔄 Führung</button>
-<button type="button" class="v13-btn" onclick="show('kraefte')">👨‍🚒 Kräfte</button>
-<button type="button" class="v13-btn" onclick="show('feedback')">📣 Rückmeldungen</button>
-<button type="button" class="v13-btn" onclick="show('commands')">📢 Befehle</button>
-<button type="button" class="v13-btn" onclick="show('atemschutz')">🫁 Atemschutz</button>
-<button type="button" class="v13-btn" onclick="show('safety')">⚠️ Lageänderung</button>
-<button type="button" class="v13-btn" onclick="show('lagekarte')">🗺️ Lagekarte</button>
-<button type="button" class="v13-btn" onclick="show('report')">📋 Einsatzbericht</button>
-</div></div>
-<div class="banner"><b>🔴 EINSATZ AKTIV</b><h1 id="homeKeyword">–</h1><p id="homeAddress">–</p><p>🕐 Beginn <span id="homeStart">–</span> · ⏱ <span id="homeDuration" class="timer">00:00:00</span></p></div>
-<div id="safetyQuick" class="quick hide"><b>⚠️ LAGEÄNDERUNG / EIGENE SICHERHEIT</b><div class="muted" style="margin-top:4px">Schnellzugriff für neue Gefahren, Personengefahr oder gefährdete Einsatzkräfte.</div><button class="btn full" onclick="openSafety()">Lageänderung dokumentieren</button></div>
-<div class="card"><h2>⚠️ AKTUELLE LAGE</h2><div id="homeLage" class="muted">Noch keine Lage erfasst.</div></div>
-<div class="card"><h2>👥 KRÄFTE & AUFTRÄGE</h2><div id="homeForces"></div></div>
-<div class="card"><h2>📣 LETZTE RÜCKMELDUNG</h2><div id="homeFeedback" class="muted">Noch keine Rückmeldung dokumentiert.</div></div>
-<div class="grid">
-<button class="action primary" onclick="show('dialog')">🧭<br>Führungsablauf<small>Erkundung · AAACEEE · Entschluss · Befehl</small></button>
-<button class="action" onclick="show('feedback')">📣<br>Rückmeldungen<small>Einheit · Lage · Status</small></button>
-<button class="action" onclick="show('commands')">📢<br>Befehle<small>Aktuelle Aufträge & Status</small></button>
-<button class="action warn" onclick="openSafety()">⚠️<br>Eigene Sicherheit<small>Lageänderung dokumentieren</small></button>
-<button class="action" onclick="show('atemschutz')">🫁<br>Atemschutz<small>FwDV 7 orientiert</small></button>
-<button class="action" onclick="show('kraefte')">👥<br>Kräfte<small>Truppführer & Truppmann</small></button>
-<button class="action" onclick="show('doku')">📝<br>Chronik<small>Datum · Uhrzeit · Dauer</small></button>
-<button class="action" onclick="show('report')">📄<br>Einsatzbericht<small>Bericht / Druck-PDF</small></button>
-</div>
-</section>
-
-<section id="dialog" class="screen">
-<div class="card"><div class="progress" id="progress"></div><div class="step" id="stepLabel"></div><div class="question" id="question"></div><div id="content"></div><div id="dialogButtons"></div></div>
-</section>
-
-<section id="kraefte" class="screen">
-<div class="card"><h2>👥 AKTUELLE EINSATZBESETZUNG</h2><p class="muted">Funktionen können vorhanden/nicht vorhanden sein. Namen sind optional.</p><div id="roles"></div><button class="btn full" onclick="toggleCrew()">Besetzung für diesen Einsatz ändern</button></div>
-<div class="card" id="crewEdit" style="display:none"><h2>ÄNDERN</h2><div id="checks"></div><button class="btn full" onclick="saveCrew()">Übernehmen</button></div>
-</section>
-
-<section id="feedback" class="screen">
-<div class="card"><h2>📣 RÜCKMELDUNG ERFASSEN</h2><p class="muted">Keine Unterscheidung nach Funk oder mündlich. Es wird nur die Rückmeldung und ihr Kontext dokumentiert.</p>
-<label>Einheit / Funktion *</label><select id="fbUnit"></select>
-<label>Rückmeldung *</label><textarea id="fbText" rows="4" placeholder="Was wurde gemeldet?"></textarea>
-<label>Einordnung</label>
-<select id="fbKind"><option value="normal">Rückmeldung</option><option value="done">Auftrag erfüllt</option><option value="support">Problem / Unterstützung erforderlich</option><option value="change">Lageänderung</option></select>
-<button class="btn full" onclick="saveFeedback()">📣 Rückmeldung speichern</button></div>
-<div class="card"><h2>LETZTE RÜCKMELDUNGEN</h2><div id="feedbackList"></div></div>
-</section>
-
-<section id="commands" class="screen">
-<div class="card"><h2>📢 AKTUELLE BEFEHLE</h2><p class="muted">Befehle aus dem Führungsdialog oder manuell dokumentiert. Der Einheitsführer entscheidet und bestätigt.</p><div id="commandList"></div></div>
-<div class="card"><h2>NEUEN / GEÄNDERTEN AUFTRAG DOKUMENTIEREN</h2>
-<label>Einheit *</label><select id="cmdUnit"></select>
-<label>Auftrag *</label><input id="cmdTask" placeholder="z. B. Menschenrettung 1. OG">
-<label>Mittel</label><input id="cmdMeans" placeholder="z. B. Atemschutz, C-Rohr">
-<label>Ziel</label><input id="cmdTarget" placeholder="z. B. 1. OG">
-<label>Weg</label><input id="cmdWay" placeholder="z. B. Treppenraum">
-<label>Status</label><select id="cmdStatus"><option value="active">🔴 Im Einsatz</option><option value="prep">🟡 In Vorbereitung</option><option value="ready">🟢 Bereit</option><option value="done">✅ Erledigt</option><option value="changed">🔵 Geändert</option></select>
-<button class="btn full" onclick="saveCommand()">📢 Auftrag dokumentieren</button></div>
-</section>
-
-<section id="safety" class="screen">
-<div class="card"><h2>⚠️ LAGEÄNDERUNG / EIGENE SICHERHEIT</h2>
-<label>Was hat sich geändert?</label>
-<div id="safetyChecks"></div>
-<label>Beschreibung *</label><textarea id="safetyText" rows="4" placeholder="Neue Erkenntnisse, Gefährdung oder Sicherheitslage …"></textarea>
-<label>Optionales Foto</label><input id="safetyPhoto" type="file" accept="image/*" capture="environment" onchange="previewPhoto(this,'safetyPreview')">
-<div id="safetyPreview"></div>
-<button class="btn full" onclick="saveSafety()">⚠️ Lageänderung dokumentieren</button></div>
-<div class="card"><div class="info">Nach der Dokumentation kannst du im Führungsablauf die Beurteilung erneut durchführen und – falls erforderlich – einen neuen Entschluss und Befehl dokumentieren.</div><button class="btn secondary full" onclick="show('dialog')">→ Zum Führungsablauf</button></div>
-</section>
-
-<section id="atemschutz" class="screen">
-<div class="banner"><b>🫁 ATEMSCHUTZÜBERWACHUNG</b><h1>FwDV 7 orientierte Dokumentation</h1><p>Truppweise Registrierung, Zeitüberwachung und Behälterdruck-Rückmeldungen. Die App ersetzt keine örtlichen Einsatzstellenregelungen.</p></div>
-<div class="card"><div class="info">Nach FwDV 7 sollen u. a. Namen, Uhrzeit beim Anschließen, 1/3- und 2/3-Zeit, Erreichen des Einsatzziels und Beginn des Rückzugs registriert werden. Die Druckwerte werden als tatsächlich abgelesene Werte dokumentiert – ohne künstliche Verbrauchsberechnung.</div></div>
-<div class="card"><h2>NEUEN ATEMSCHUTZTRUPP REGISTRIEREN</h2>
-<label>Trupp *</label><select id="asTrupp"></select>
-<label>Truppführer *</label><input id="asTF" placeholder="Name des Truppführers">
-<label>Truppmann *</label><input id="asTM" placeholder="Name des Truppmanns">
-<label>Uhrzeit Anschluss Luftversorgung *</label><input id="asConnect" type="time">
-<label>Anfangsdruck / Startdruck (bar) *</label><input id="asStartdruck" type="number" min="0" max="400" placeholder="z. B. 300">
-<label>Erwartete Einsatzzeit (Minuten) *</label><input id="asExpected" type="number" min="1" max="300" placeholder="z. B. 30">
-<button class="btn full" onclick="addAS()">🫁 Überwachung registrieren</button></div>
-<div class="card"><h2>AKTIVE ATEMSCHUTZTRUPPS</h2><div id="asList"></div></div>
-</section>
-
-<section id="lagekarte" class="screen">
-<div class="card"><h2>🗺️ LAGEKARTE</h2><p class="muted">v14 hält den dokumentierten Kartenstand und die Versionierung bereit. Die echte zeichnbare Kartenfläche folgt als eigener Baustein.</p>
-<label>Änderung / Lageeintrag *</label><textarea id="mapV14Text" rows="4" placeholder="Was wurde auf der Lagekarte geändert?"></textarea>
-<button class="btn full" onclick="saveMapV14()">💾 Lage speichern</button></div>
-<div class="card"><h2>GESPEICHERTE VERSIONEN</h2><div id="mapV14List"></div></div>
-</section>
-<section id="doku" class="screen"><div class="card"><h2>📝 EINSATZCHRONOLOGIE</h2><div id="timeline"></div></div></section>
-
-<section id="settings" class="screen">
-<div class="banner"><b>⚙️ EINSTELLUNGEN</b><h1>Einheit konfigurieren</h1><p>Einheits-/Funkrufname und Standardbesetzung.</p></div>
-<div class="card"><h2>FAHRZEUG-/EINHEITSNAME</h2><label>Bezeichnung</label><input id="unitNameInput" placeholder="z. B. Florian Bebra 2-46"><button class="btn full" onclick="saveSettingsName()">Name speichern</button></div>
-<div class="card"><h2>STANDARDBESETZUNG</h2><div id="standardChecks"></div>
-<div class="v14-standard-names"><h3>Standardnamen (optional)</h3><div id="standardNames"></div></div>
-<button class="btn full" onclick="saveStandardCrew()">Standardbesetzung speichern</button></div>
-<div class="card"><div class="info">Namen gehören zunächst nur zur aktuellen Einsatzbesetzung. Für Atemschutz müssen Truppführer und Truppmann in der Atemschutzüberwachung zwingend benannt werden. Namen können gegenseitig übertragen werden.</div></div>
-</section>
-
-<section id="report" class="screen">
-<div class="card"><h2>📄 EINSATZBERICHT</h2><div id="reportContent"></div><button class="btn full" onclick="window.print()">🖨️ Bericht drucken / als PDF speichern</button></div>
-</section>
+<label>Meldebild *</label><select id="startMeldebild"></select>
+<div class="info" id="keywordInfo" style="margin-top:8px"></div>
+<label>Straße / Hausnummer *</label><input id="startStreet" placeholder="z. B. Musterstraße 12">
+<div class="grid"><div><label>PLZ *</label><input id="startZip" inputmode="numeric" placeholder="36179"></div><div><label>Ort *</label><input id="startCity" placeholder="Bebra"></div></div>
+<label>Objekt / Zusatzinformation</label><input id="startObject" placeholder="z. B. 2. OG, Hinterhaus">
+<label>Besondere Hinweise</label><textarea id="startNotes" rows="3" placeholder="Weitere Angaben …"></textarea>
+<button class="btn full" onclick="startIncident()">🚨 Einsatz starten</button></div></section>
+<section id="dialog" class="screen"><div class="card"><div class="progress" id="progress"></div><div class="step" id="stepLabel"></div><div class="question" id="question"></div><div id="dialogContent"></div><div id="dialogButtons"></div></div></section>
+<section id="kraefte" class="screen"><div class="card"><h2>👥 KRÄFTE · AKTUELLE EINSATZBESETZUNG</h2><div class="muted">Wer ist da, wer macht gerade was und wer ist frei?</div><div id="crewOverview"></div><button class="btn full" onclick="openCrewEdit()">Besetzung für diesen Einsatz ändern</button></div><div class="card"><h2>📋 AUFTRAGSÜBERSICHT</h2><div id="crewOrders"></div></div></section>
+<section id="feedback" class="screen"><div class="card"><h2>📣 RÜCKMELDUNG ERFASSEN</h2><div class="muted">Keine Unterscheidung zwischen Funk und mündlich.</div><label>Rückmeldung von *</label><select id="fbUnit"></select><label>Rückmeldung *</label><textarea id="fbText" rows="4" placeholder="Was wurde gemeldet?"></textarea><label>Einordnung</label><select id="fbKind"><option value="normal">Rückmeldung</option><option value="done">Auftrag erfüllt</option><option value="support">Problem / Unterstützung erforderlich</option><option value="change">Lageänderung</option></select><button class="btn full" onclick="saveFeedback()">📣 Speichern</button></div><div class="card"><h2>LETZTE RÜCKMELDUNGEN</h2><div id="feedbackList"></div></div></section>
+<section id="commands" class="screen"><div class="card"><h2>📢 AKTUELLE BEFEHLE</h2><div id="commandList"></div></div><div class="card"><h2>NEUEN AUFTRAG DOKUMENTIEREN</h2><label>Einheit / Trupp *</label><select id="cmdUnit"></select><label>Auftrag *</label><input id="cmdTask" placeholder="z. B. Menschenrettung 1. OG"><label>Mittel</label><input id="cmdMeans"><label>Ziel</label><input id="cmdTarget"><label>Weg</label><input id="cmdWay"><label>Status</label><select id="cmdStatus"><option value="active">🔴 Im Einsatz</option><option value="prep">🟡 In Vorbereitung</option><option value="ready">🟢 Bereit</option><option value="done">✅ Erledigt</option></select><button class="btn full" onclick="saveCommand()">📢 Auftrag dokumentieren</button></div></section>
+<section id="safety" class="screen"><div class="card"><h2>⚠️ LAGEÄNDERUNG / EIGENE SICHERHEIT</h2><div id="safetyChecks"></div><label>Beschreibung *</label><textarea id="safetyText" rows="4" placeholder="Was hat sich geändert?"></textarea><label>Foto optional</label><input id="safetyPhoto" type="file" accept="image/*" capture="environment"><div id="safetyPreview"></div><button class="btn full" onclick="saveSafety()">⚠️ Lageänderung speichern</button></div><div class="card"><div class="info">Nach dem Speichern beginnt automatisch ein neuer Führungskreislauf wieder bei Erkundung.</div></div></section>
+<section id="atemschutz" class="screen"><div class="banner"><b>🫁 ATEMSCHUTZÜBERWACHUNG</b><h1>FwDV 7 orientiert</h1><p>Der Luftvorrat wird für jeden Geräteträger einzeln erfasst.</p></div><div class="card"><div class="info">Die App dokumentiert gemeldete Druckwerte und Zeiten. Sie berechnet keinen künstlichen Druckverbrauch.</div><label>Atemschutztrupp *</label><select id="asTrupp" onchange="renderASPeople()"></select><div id="asPeopleForm"></div><label>Erwartete Einsatzzeit (Minuten) *</label><input id="asExpected" type="number" min="1" max="300" value="30"><button class="btn full" onclick="registerAS()">🫁 Überwachung registrieren</button></div><div class="card"><h2>AKTIVE / ABGESCHLOSSENE ÜBERWACHUNGEN</h2><div id="asList"></div></div></section>
+<section id="lagekarte" class="screen"><div class="card"><h2>🗺️ LAGEKARTE</h2><div class="muted">Kartenausschnitt aus dem Einsatzort. Zeichnungen werden als eigener Lagezustand gespeichert.</div><div id="map" class="mapWrap" style="margin-top:9px"></div><div class="mapTools"><button onclick="mapMode('draw')">✏️ Zeichnen</button><button onclick="mapMode('marker')">📍 Symbol setzen</button><button onclick="mapMode('erase')">⌫ Letztes löschen</button><button onclick="saveMapPrompt()">💾 Lage speichern</button></div><div class="mapLegend">Symbolmodus: Punkt setzen und anschließend Bezeichnung wählen. Zeichnungen sind schematisch; taktische Entscheidungen bleiben beim Einheitsführer.</div></div><div class="card"><h2>GESPEICHERTE LAGEN</h2><div id="mapVersions"></div></div></section>
+<section id="doku" class="screen"><div class="card"><h2>📝 CHRONIK</h2><div class="muted">Jeder Eintrag: Datum · Uhrzeit · Dauer seit Einsatzbeginn.</div><div id="timeline"></div></div></section>
+<section id="settings" class="screen"><div class="banner"><b>⚙️ EINSTELLUNGEN</b><h1>Standardbesetzung</h1><p>Diese Besetzung wird beim Start eines neuen Einsatzes kopiert.</p></div><div class="card"><h2>Einheits-/Funkrufname</h2><input id="unitNameInput" placeholder="z. B. Florian Bebra 2-46"><button class="btn full" onclick="saveUnitName()">Speichern</button></div><div class="card"><h2>👥 STANDARDBESETZUNG</h2><div id="standardCrewForm"></div><button class="btn full" onclick="saveStandardCrew()">Standardbesetzung speichern</button></div><div class="card"><div class="info">Bei jedem Trupp zuerst den Trupp anhaken. Erst dann erscheinen Truppführer und Truppmann. Beide können unabhängig aktiviert und mit Namen versehen werden.</div></div></section>
+<section id="report" class="screen"><div class="card"><h2>📄 EINSATZBERICHT</h2><div id="reportContent"></div></div></section>
 </main>
-
-<div class="nav">
-<button id="navHome" class="active" onclick="show('home')"><b>⌂</b>Einsatz</button>
-<button id="navCrew" onclick="show('kraefte')"><b>👥</b>Kräfte</button>
-<button id="navFeedback" onclick="show('feedback')"><b>📣</b>Rückm.</button>
-<button id="navDoku" onclick="show('doku')"><b>☷</b>Chronik</button>
-<button id="navMore" onclick="show('settings')"><b>⋯</b>Mehr</button>
+<nav class="nav"><button id="navHome" onclick="show('home')"><b>⌂</b>Einsatz</button><button id="navCrew" onclick="show('kraefte')"><b>👥</b>Kräfte</button><button id="navFb" onclick="show('feedback')"><b>📣</b>Rückm.</button><button id="navLog" onclick="show('doku')"><b>☷</b>Chronik</button><button id="navMore" onclick="show('settings')"><b>⋯</b>Mehr</button></nav>
+<div id="toast" class="toast"></div><div id="modal" class="modal"><div class="sheet"><h2 id="modalTitle"></h2><div id="modalBody"></div><div id="modalActions" class="actions"></div></div></div>
 </div>
-<div id="toast" class="toast"></div>
-<div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="sheet"><h2 id="modalTitle"></h2><div id="modalBody"></div><div id="modalActions" class="actions"></div></div></div>
-</div>
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
-const roles=["Einheitsführer","Melder","Maschinist","Angriffstrupp","Wassertrupp","Schlauchtrupp"];
-const subroles=["Truppführer","Truppmann"];
-const hazardItems=["Atemgifte","Angstreaktion / Panik","Ausbreitung der Gefahr","Atomare Gefahren / ionisierende Strahlung","Chemische Gefahren","Erkrankung / Verletzung","Explosion","Elektrizität","Einsturz"];
-let standard=JSON.parse(localStorage.getItem("standardCrew")||'{"Einheitsführer":true,"Melder":true,"Maschinist":true,"Angriffstrupp":true,"Wassertrupp":true,"Schlauchtrupp":true}');
-let current=JSON.parse(localStorage.getItem("currentCrew")||JSON.stringify(standard));
-let names=JSON.parse(localStorage.getItem("crewNames")||"{}");
-let log=JSON.parse(localStorage.getItem("incidentLog")||"[]");
-let answers=JSON.parse(localStorage.getItem("leadershipAnswers")||"{}");
-let step=Number(localStorage.getItem("leadershipStep")||0);
-let asTeams=JSON.parse(localStorage.getItem("asTeams")||"[]");
-let feedbacks=JSON.parse(localStorage.getItem("feedbacks")||"[]");
-let commands=JSON.parse(localStorage.getItem("commands")||"[]");
-let photos=JSON.parse(localStorage.getItem("incidentPhotos")||"[]");
-let unitName=localStorage.getItem("unitName")||"";
-let incident=JSON.parse(localStorage.getItem("incident")||"null");
-let timerHandle=null;
-
-const steps=[
-{name:"Erkundung / Lage",q:"Was stellst du fest?",type:"text",key:"lage",placeholder:"Lage, Feststellungen, Personen, Gefahren …"},
-{name:"AAACEEE",q:"Welche Gefahren stellst du fest oder sind unklar?",type:"aaaceee",key:"aaaceee"},
-{name:"Beurteilung",q:"Wie beurteilst du die Lage?",type:"text",key:"beurteilung",placeholder:"Eigene taktische Beurteilung des Einheitsführers …"},
-{name:"Entschluss",q:"Was ist dein Entschluss?",type:"decision",key:"entschluss"},
-{name:"Befehl",q:"Wie lautet dein Befehl?",type:"command",key:"befehl"},
-{name:"Überwachung / Kontrolle",q:"Was musst du jetzt überwachen?",type:"text",key:"ueberwachung",placeholder:"Rückmeldungen, Wirkung, Gefahren, Atemschutz, Lageentwicklung …"},
-{name:"Lageänderung / Eigene Sicherheit",q:"Hat sich die Lage verändert oder ist die eigene Sicherheit betroffen?",type:"safety",key:"safety"},
-{name:"Abschluss",q:"Ist der Führungsablauf für diesen Abschnitt abgeschlossen?",type:"choices",key:"abschluss",opts:["Ja","Nein – weiter überwachen"]}
-];
-
-function persist(){
-localStorage.setItem("currentCrew",JSON.stringify(current));localStorage.setItem("crewNames",JSON.stringify(names));
-localStorage.setItem("incidentLog",JSON.stringify(log));localStorage.setItem("leadershipAnswers",JSON.stringify(answers));
-localStorage.setItem("leadershipStep",step);localStorage.setItem("asTeams",JSON.stringify(asTeams));
-localStorage.setItem("feedbacks",JSON.stringify(feedbacks));localStorage.setItem("commands",JSON.stringify(commands));localStorage.setItem("incidentPhotos",JSON.stringify(photos));
-}
-function nowParts(){
-const d=new Date();return {date:d.toLocaleDateString("de-DE"),time:d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit",second:"2-digit"})};
-}
-function elapsed(){
-if(!incident?.startedAt)return "00:00:00";
-let sec=Math.max(0,Math.floor((Date.now()-new Date(incident.startedAt).getTime())/1000));
-return fmt(sec);
-}
-function fmt(sec){let h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;return [h,m,s].map((v,i)=>i===0?String(v).padStart(2,"0"):String(v).padStart(2,"0")).join(":")}
-function stamp(){let p=nowParts();return `${p.date} · ${p.time} · +${elapsed()}`}
-function addLog(text){
-if(!incident)return;
-log.unshift({stamp:stamp(),text});persist();renderLog();
-}
-function toast(t){let x=document.getElementById("toast");x.textContent=t;x.style.display="block";clearTimeout(window.__toast);window.__toast=setTimeout(()=>x.style.display="none",1800)}
-function show(id){
-document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");
-document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
-if(id==="home")navHome.classList.add("active");if(id==="kraefte")navCrew.classList.add("active");if(id==="feedback")navFeedback.classList.add("active");if(id==="doku")navDoku.classList.add("active");if(id==="settings"||id==="report")navMore.classList.add("active");
-if(id==="dialog")renderDialog();renderAll();window.scrollTo(0,0);
-}
-function renderDialog(){
-let s=steps[step],p=document.getElementById("progress");p.innerHTML=steps.map((_,i)=>`<i class="seg ${i<step?'done':''} ${i===step?'now':''}"></i>`).join("");
-stepLabel.textContent=`Schritt ${step+1} von ${steps.length} · ${s.name}`;question.textContent=s.q;let c=document.getElementById("content");
-if(s.type==="text")c.innerHTML=`<textarea id="answer" rows="6" placeholder="${s.placeholder}">${answers[s.key]||""}</textarea>`;
-if(s.type==="choices")c.innerHTML=s.opts.map(o=>`<label class="choice"><input type="radio" name="choice" value="${o}" ${answers[s.key]===o?'checked':''}>${o}</label>`).join("");
-if(s.type==="aaaceee"){
-let saved=answers.aaaceee||{};c.innerHTML=`<div class="info">Abfrage zur strukturierten Gefahrenwahrnehmung. Der Einheitsführer bewertet selbst; die App entscheidet nicht.</div>`+
-hazardItems.map((h,i)=>`<div class="choice" style="display:block"><b>${h}</b><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:6px">
-<label class="choice" style="margin:0;padding:7px"><input type="radio" name="haz${i}" value="Ja" ${saved[h]==="Ja"?'checked':''}>Ja</label>
-<label class="choice" style="margin:0;padding:7px"><input type="radio" name="haz${i}" value="Unklar" ${saved[h]==="Unklar"?'checked':''}>Unklar</label>
-<label class="choice" style="margin:0;padding:7px"><input type="radio" name="haz${i}" value="Nein" ${saved[h]==="Nein"?'checked':''}>Nein</label></div></div>`).join("");
-}
-if(s.type==="decision"){
-c.innerHTML=`<div class="info">Formulierungshilfen – Auswahl und tatsächlicher Entschluss bleiben beim Einheitsführer.</div>
-<div id="decisionOptions">${["Menschenrettung durchführen","Brandbekämpfung einleiten","Gefahrenbereich sichern","Ausbreitung verhindern","Rettungsmaßnahmen unterstützen","Freier Entschluss"].map(o=>`<label class="choice"><input type="radio" name="decision" value="${o}" ${answers.entschluss===o?'checked':''}>${o}</label>`).join("")}</div>
-<label>Eigener Entschluss / Anpassung</label><textarea id="decisionText" rows="4" placeholder="Eigenen Entschluss formulieren …">${answers.entschlussText||""}</textarea>`;
-}
-if(s.type==="command"){
-let u=answers.commandUnit||activeUnits()[0]||"Einheit";
-c.innerHTML=`<label>Einheit *</label><select id="commandUnit">${activeUnits().map(r=>`<option ${r===u?'selected':''}>${r}</option>`).join("")}</select>
-<label>Auftrag *</label><input id="commandTask" value="${answers.commandTask||""}" placeholder="z. B. Menschenrettung">
-<label>Mittel</label><input id="commandMeans" value="${answers.commandMeans||""}" placeholder="z. B. Atemschutz + C-Rohr">
-<label>Ziel</label><input id="commandTarget" value="${answers.commandTarget||""}" placeholder="z. B. 1. OG">
-<label>Weg</label><input id="commandWay" value="${answers.commandWay||""}" placeholder="z. B. Treppenraum">
-<div class="card" style="margin-top:10px;background:#07182a"><div class="muted">Befehlsvorschlag</div><div class="big" id="commandPreview">${commandPreview()}</div></div>`;
-["commandUnit","commandTask","commandMeans","commandTarget","commandWay"].forEach(id=>document.getElementById(id)?.addEventListener("input",updateCommandPreview));
-}
-if(s.type==="safety"){
-c.innerHTML=`<div class="quick"><b>⚠️ Schnellprüfung</b><div class="muted">Wenn die Lageänderung erheblich ist, kann anschließend die Beurteilung erneut durchlaufen werden.</div></div><div id="safetyChecks"></div><label>Kurze Beschreibung</label><textarea id="safetyDialogText" rows="4" placeholder="Was hat sich geändert?">${answers.safetyText||""}</textarea>`;
-renderSafetyChecks("safetyChecks",answers.safetyTypes||[]);
-}
-if(s.type==="choices"){}
-let b=document.getElementById("dialogButtons");b.innerHTML=(step>0?`<button class="btn secondary" onclick="back()">← Zurück</button>`:"")+`<button class="btn full" onclick="next()">${step===steps.length-1?"Führung abschließen":"Weiter →"}</button>`;
-}
-function updateCommandPreview(){answers.commandUnit=document.getElementById("commandUnit")?.value||"";answers.commandTask=document.getElementById("commandTask")?.value||"";answers.commandMeans=document.getElementById("commandMeans")?.value||"";answers.commandTarget=document.getElementById("commandTarget")?.value||"";answers.commandWay=document.getElementById("commandWay")?.value||"";document.getElementById("commandPreview").textContent=commandPreview();persist()}
-function commandPreview(){let u=answers.commandUnit||"Einheit";let a=answers.commandTask||"Auftrag offen";let p=[answers.commandMeans&&"Mittel "+answers.commandMeans,answers.commandTarget&&"Ziel "+answers.commandTarget,answers.commandWay&&"Weg "+answers.commandWay].filter(Boolean).join(" · ");return `${u}: ${a}${p?" · "+p:""}`}
-function saveAnswer(){
-let s=steps[step];
-if(s.type==="text")answers[s.key]=document.getElementById("answer")?.value.trim()||"";
-if(s.type==="choices")answers[s.key]=document.querySelector('input[name="choice"]:checked')?.value||"";
-if(s.type==="aaaceee"){let obj={};hazardItems.forEach((h,i)=>obj[h]=document.querySelector(`input[name="haz${i}"]:checked`)?.value||"");answers.aaaceee=obj}
-if(s.type==="decision"){answers.entschluss=document.querySelector('input[name="decision"]:checked')?.value||"";answers.entschlussText=document.getElementById("decisionText")?.value.trim()||"";if(answers.entschlussText)answers.entschluss=answers.entschlussText}
-if(s.type==="command"){answers.commandUnit=document.getElementById("commandUnit")?.value||"";answers.commandTask=document.getElementById("commandTask")?.value.trim()||"";answers.commandMeans=document.getElementById("commandMeans")?.value.trim()||"";answers.commandTarget=document.getElementById("commandTarget")?.value.trim()||"";answers.commandWay=document.getElementById("commandWay")?.value.trim()||"";answers.befehl=commandPreview()}
-if(s.type==="safety"){answers.safetyTypes=[...document.querySelectorAll("#safetyChecks input:checked")].map(x=>x.value);answers.safetyText=document.getElementById("safetyDialogText")?.value.trim()||"";answers.safety=answers.safetyTypes.join(", ")}
-persist()
-}
-function next(){
-saveAnswer();let s=steps[step];
-if(s.type==="aaaceee" && Object.keys(answers.aaaceee||{}).length<1){toast("Bitte AAACEEE-Abfrage durchführen");return}
-if(["text","choices","decision","command","safety"].includes(s.type) && !answers[s.key] && s.type!=="command"){toast("Bitte zuerst beantworten");return}
-let detail=s.type==="aaaceee"?Object.entries(answers.aaaceee).filter(([,v])=>v&&v!=="Nein").map(([k,v])=>`${k}: ${v}`).join(" · "):answers[s.key]||answers.befehl||"";
-addLog(`${s.name}: ${s.q}${detail?" → "+detail:""}`);
-if(s.type==="command" && answers.commandTask){commands.unshift({unit:answers.commandUnit,task:answers.commandTask,means:answers.commandMeans,target:answers.commandTarget,way:answers.commandWay,status:"active",stamp:stamp()});persist();renderCommands()}
-if(step<steps.length-1){step++;persist();renderDialog()}else{toast("Führungsablauf dokumentiert");show("home")}
-}
-function back(){saveAnswer();if(step>0){step--;persist();renderDialog()}}
-function activeUnits(){return roles.filter(r=>current[r])}
-function toggleCrew(){
-crewEdit.style.display=crewEdit.style.display==="none"?"block":"none";
-checks.innerHTML=roles.map(r=>`<label class="choice"><input type="checkbox" data-role="${r}" ${current[r]?'checked':''} ${r==="Einheitsführer"?'disabled':''}>${r}${r==="Einheitsführer"?" (immer vorhanden)":""}</label>`).join("");
-}
-function saveCrew(){
-document.querySelectorAll("#checks input").forEach(i=>current[i.dataset.role]=i.checked);current.Einheitsführer=true;
-addLog("Aktuelle Einsatzbesetzung geändert.");persist();renderAll();toast("Besetzung übernommen")
-}
-function renderRoles(){
-rolesDiv.innerHTML=roles.map(r=>{
-if(["Angriffstrupp","Wassertrupp","Schlauchtrupp"].includes(r)){
-return `<div class="role"><div class="roleTop"><b>${r}</b><span class="badge ${current[r]?'green':''}">${current[r]?'vorhanden':'nicht vorhanden'}</span></div>
-<div class="subrole">Truppführer <span>${names[r]?.Truppführer||"(Name optional)"}</span></div>
-<div class="subrole">Truppmann <span>${names[r]?.Truppmann||"(Name optional)"}</span></div>
-<div style="display:flex;gap:6px;margin-top:7px"><button class="btn secondary" onclick="editNames('${r}')">Namen</button>${current[r]?`<button class="btn secondary" onclick="show('atemschutz')">Atemschutz</button>`:""}</div></div>`
-}
-return `<div class="role"><div class="roleTop"><b>${r}</b><span class="badge ${current[r]?'green':''}">${current[r]?'vorhanden':'nicht vorhanden'}</span></div></div>`
-}).join("")
-}
-function editNames(trupp){
-openModal("Namen – "+trupp,`<label>Truppführer (optional)</label><input id="mTF" value="${names[trupp]?.Truppführer||""}"><label>Truppmann (optional)</label><input id="mTM" value="${names[trupp]?.Truppmann||""}">`,
-[['Speichern','saveCrewNames("'+trupp+'")','primary'],['Abbrechen','closeModal()','secondary']])
-}
-function saveCrewNames(trupp){
-names[trupp]={Truppführer:document.getElementById("mTF").value.trim(),Truppmann:document.getElementById("mTM").value.trim()};persist();closeModal();renderAll();toast("Namen gespeichert")
-}
-function renderStandardChecks(){
-standardChecks.innerHTML=roles.map(r=>`<label class="choice"><input type="checkbox" data-standard-role="${r}" ${standard[r]?'checked':''} ${r==="Einheitsführer"?'disabled':''}>${r}${r==="Einheitsführer"?" (immer vorhanden)":""}</label>`).join("")
-}
-function saveStandardCrew(){document.querySelectorAll("[data-standard-role]").forEach(i=>standard[i.dataset.standardRole]=i.checked);standard.Einheitsführer=true;localStorage.setItem("standardCrew",JSON.stringify(standard));addLog("Standardbesetzung geändert.");toast("Standardbesetzung gespeichert")}
-function saveSettingsName(){unitName=document.getElementById("unitNameInput").value.trim();localStorage.setItem("unitName",unitName);renderAll();toast("Name gespeichert")}
-function renderFeedbackUnits(){let opts=activeUnits().map(r=>`<option>${r}</option>`).join("");fbUnit.innerHTML=opts;cmdUnit.innerHTML=opts}
-function saveFeedback(){
-let unit=fbUnit.value,text=fbText.value.trim(),kind=fbKind.value;if(!text){toast("Bitte Rückmeldung eingeben");return}
-let item={unit,text,kind,stamp:stamp()};feedbacks.unshift(item);addLog(`Rückmeldung ${unit}: ${text}${kind!=="normal"?" · "+kindLabel(kind):""}`);persist();fbText.value="";renderAll();toast("Rückmeldung gespeichert")
-}
-function kindLabel(k){return {done:"Auftrag erfüllt",support:"Problem / Unterstützung erforderlich",change:"Lageänderung"}[k]||"Rückmeldung"}
-function renderFeedback(){feedbackList.innerHTML=feedbacks.length?feedbacks.slice(0,12).map(x=>`<div class="feedback"><b>${x.unit}</b> <span class="badge ${x.kind==='support'?'red':x.kind==='done'?'green':'blue'}">${kindLabel(x.kind)}</span><div class="meta">${x.stamp}</div><div class="text">„${escapeHtml(x.text)}“</div></div>`).join(""):'<div class="muted">Noch keine Rückmeldungen.</div>'}
-function saveCommand(){
-let unit=cmdUnit.value,task=cmdTask.value.trim();if(!task){toast("Bitte Auftrag eingeben");return}
-let item={unit,task,means:cmdMeans.value.trim(),target:cmdTarget.value.trim(),way:cmdWay.value.trim(),status:cmdStatus.value,stamp:stamp()};commands.unshift(item);
-addLog(`Befehl/Auftrag dokumentiert: ${unit} → ${task}`);persist();cmdTask.value="";cmdMeans.value="";cmdTarget.value="";cmdWay.value="";renderAll();toast("Auftrag dokumentiert")
-}
-function statusLabel(s){return {active:"🔴 Im Einsatz",prep:"🟡 In Vorbereitung",ready:"🟢 Bereit",done:"✅ Erledigt",changed:"🔵 Geändert"}[s]||s}
-function renderCommands(){commandList.innerHTML=commands.length?commands.slice(0,12).map((x,i)=>`<div class="commandCard"><div><b>${x.unit}</b> <span class="badge">${statusLabel(x.status)}</span></div><div class="text">${escapeHtml(x.task)}</div><div class="meta">${x.stamp}${x.means?" · Mittel "+escapeHtml(x.means):""}${x.target?" · Ziel "+escapeHtml(x.target):""}${x.way?" · Weg "+escapeHtml(x.way):""}</div><button class="btn secondary" style="margin-top:7px" onclick="changeCommandStatus(${i})">Status ändern</button></div>`).join(""):'<div class="muted">Noch keine Befehle dokumentiert.</div>'}
-function changeCommandStatus(i){
-let x=commands[i],opts=["active","prep","ready","done","changed"];let idx=opts.indexOf(x.status);x.status=opts[(idx+1)%opts.length];addLog(`Befehlsstatus geändert: ${x.unit} → ${statusLabel(x.status)}`);persist();renderAll()
-}
-function renderSafetyChecks(id,selected=[]){
-document.getElementById(id).innerHTML=["Neue Gefahr","Personenlage","Gefährdung eigener Kräfte","Ausbreitung","Einsturz","Elektrizität","Wetter / Umgebung","Sonstiges"].map(x=>`<label class="choice"><input type="checkbox" value="${x}" ${selected.includes(x)?'checked':''}>${x}</label>`).join("")
-}
-function openSafety(){show("safety");renderSafetyChecks("safetyChecks")}
-function saveSafety(){
-let types=[...document.querySelectorAll("#safetyChecks input:checked")].map(x=>x.value),text=document.getElementById("safetyText").value.trim();if(!text){toast("Bitte Lageänderung beschreiben");return}
-let p=document.getElementById("safetyPhoto").files[0];if(p)readPhoto(p,"Lageänderung / Eigene Sicherheit",text);
-addLog(`⚠️ Lageänderung: ${types.join(", ")||"Sonstiges"} · ${text}`);answers.safetyTypes=types;answers.safetyText=text;persist();document.getElementById("safetyText").value="";toast("Lageänderung dokumentiert");show("home")
-}
-function previewPhoto(input,id){let file=input.files[0];if(!file)return;let url=URL.createObjectURL(file);document.getElementById(id).innerHTML=`<div class="photoBox"><img src="${url}" alt="Vorschau"></div>`}
-function readPhoto(file,section,caption){
-let reader=new FileReader();reader.onload=()=>{let item={section,caption,data:reader.result,stamp:stamp()};photos.unshift(item);persist();renderReport()};reader.readAsDataURL(file)
-}
-function addPhotoFromInput(input,section){
-let f=input.files[0];if(!f)return;readPhoto(f,section,document.getElementById("photoCaption").value.trim()||"Foto zur Erkundung");input.value="";toast("Foto gespeichert")
-}
-function renderAS(){
-let list=document.getElementById("asList");if(!asTeams.length){list.innerHTML='<div class="muted">Noch kein Atemschutztrupp registriert.</div>';return}
-list.innerHTML=asTeams.map((x,i)=>{
-let elapsedMin=Math.max(0,Math.floor((Date.now()-new Date(x.connectedAt).getTime())/60000));
-let one=Math.round(x.expected/3),two=Math.round(x.expected*2/3);
-return `<div class="asCard"><div class="asHead"><div class="asName">🫁 ${x.trupp}</div><span class="badge green">aktiv</span></div>
-<div class="asPeople">Truppführer: <b>${escapeHtml(x.tf)}</b> · Truppmann: <b>${escapeHtml(x.tm)}</b></div>
-<div class="row"><span>Anschluss</span><b>${x.connectTime}</b></div><div class="row"><span>Startdruck</span><b>${x.startdruck} bar</b></div>
-<div class="row"><span>Einsatzzeit</span><b class="timer">${fmt(Math.floor((Date.now()-new Date(x.connectedAt).getTime())/1000))}</b></div>
-<div class="row"><span>1/3 Hinweis</span><b>${one} min</b></div><div class="row"><span>2/3 Hinweis</span><b>${two} min</b></div>
-<div class="row"><span>Einsatzziel</span><span>${x.targetTime?x.targetTime:"nicht dokumentiert"}</span></div><div class="row"><span>Rückzug</span><span>${x.withdrawTime?x.withdrawTime:"nicht dokumentiert"}</span></div>
-<label>Behälterdruck – tatsächliche Ablesung (bar)</label><input id="asPressure${i}" type="number" min="0" max="400" placeholder="z. B. 220">
-<label>Rückmeldung / Ereignis</label><input id="asNote${i}" placeholder="z. B. Einsatzziel erreicht">
-<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"><button class="btn secondary" onclick="asEvent(${i},'Druckmeldung')">Druckmeldung</button><button class="btn secondary" onclick="asEvent(${i},'Einsatzziel erreicht')">Einsatzziel</button><button class="btn secondary" onclick="asEvent(${i},'Beginn Rückzug')">Rückzug</button><button class="btn danger" onclick="endAS(${i})">Überwachung beenden</button></div>
-<div class="meta" style="margin-top:8px;color:var(--muted)">Registrierung: ${x.stamp}</div></div>`}).join("")
-}
-function addAS(){
-let trupp=asTrupp.value,tf=asTF.value.trim(),tm=asTM.value.trim(),connect=asConnect.value,sd=Number(asStartdruck.value),expected=Number(asExpected.value);
-if(!current[trupp]){toast("Dieser Trupp ist nicht vorhanden.");return}
-if(!tf||!tm||!connect||!sd||!expected){toast("Truppführer, Truppmann, Anschlusszeit, Startdruck und erwartete Einsatzzeit ausfüllen.");return}
-let item={trupp,tf,tm,connectTime:connect,startdruck:sd,expected,connectedAt:new Date().toISOString(),stamp:stamp(),events:[],targetTime:null,withdrawTime:null};
-asTeams.push(item);names[trupp]={Truppführer:tf,Truppmann:tm};persist();addLog(`Atemschutztrupp registriert: ${trupp} · TF ${tf} · TM ${tm} · Anschluss ${connect} · ${sd} bar.`);
-document.getElementById("asTF").value="";document.getElementById("asTM").value="";document.getElementById("asConnect").value="";document.getElementById("asStartdruck").value="";document.getElementById("asExpected").value="";
-renderAll();toast("Atemschutztrupp registriert")
-}
-function asEvent(i,type){
-let x=asTeams[i],p=nowParts(),pressure=document.getElementById("asPressure"+i).value,note=document.getElementById("asNote"+i).value.trim();
-let event={type,stamp:stamp(),clock:p.time,pressure:pressure===""?null:Number(pressure),note};
-x.events.unshift(event);if(type==="Einsatzziel erreicht")x.targetTime=p.time;if(type==="Beginn Rückzug")x.withdrawTime=p.time;
-addLog(`Atemschutz: ${x.trupp} · ${type}${pressure!==""?" · "+pressure+" bar":""}${note?" · "+note:""}`);persist();renderAll();toast(type+" dokumentiert")
-}
-function endAS(i){
-let x=asTeams[i];addLog(`Atemschutzüberwachung beendet: ${x.trupp} · Einsatzzeit ${fmt(Math.floor((Date.now()-new Date(x.connectedAt).getTime())/1000))}.`);x.endedAt=new Date().toISOString();x.endedStamp=stamp();x.active=false;persist();renderAll();toast("Überwachung beendet")
-}
-function renderLog(){timeline.innerHTML=log.length?log.map(e=>`<div class="event"><b>${e.stamp}</b><div>${escapeHtml(e.text)}</div></div>`).join(""):'<div class="muted">Noch keine Einträge.</div>'}
-function renderHome(){
-homeKeyword.textContent=incident?.keyword||"–";homeAddress.textContent=incident?`${incident.street} · ${incident.city}`:"–";homeStart.textContent=incident?new Date(incident.startedAt).toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}):"–";homeDuration.textContent=elapsed();
-homeLage.textContent=answers.lage||"Noch keine Lage erfasst.";
-let active=activeUnits().filter(x=>x!=="Einheitsführer");homeForces.innerHTML=active.map(r=>{let last=feedbacks.find(f=>f.unit===r);let cmd=commands.find(c=>c.unit===r);return `<div class="row"><span>${r}</span><span>${cmd?`<span class="badge">${statusLabel(cmd.status)}</span>`:""} ${last?"<span class='badge blue'>Rückmeldung</span>":""}</span></div>`}).join("")||'<div class="muted">Keine weiteren Einheiten konfiguriert.</div>';
-homeFeedback.innerHTML=feedbacks[0]?`<b>${feedbacks[0].unit}</b> · ${feedbacks[0].stamp}<div style="margin-top:4px">„${escapeHtml(feedbacks[0].text)}“</div>`:"Noch keine Rückmeldung dokumentiert.";
-safetyQuick.classList.toggle("hide",!incident)
-}
-function renderReport(){
-if(!incident){reportContent.innerHTML='<div class="muted">Kein aktiver Einsatz.</div>';return}
-let crew=roles.map(r=>{if(!current[r])return null;if(["Angriffstrupp","Wassertrupp","Schlauchtrupp"].includes(r))return `<li><b>${r}</b> – TF: ${escapeHtml(names[r]?.Truppführer||"nicht angegeben")}; TM: ${escapeHtml(names[r]?.Truppmann||"nicht angegeben")}</li>`;return `<li><b>${r}</b></li>`}).filter(Boolean).join("");
-let haz=answers.aaaceee?Object.entries(answers.aaaceee).filter(([,v])=>v&&v!=="Nein").map(([k,v])=>`<li>${escapeHtml(k)}: <b>${v}</b></li>`).join(""):"<li>Keine Einträge</li>";
-let fb=feedbacks.map(x=>`<li>${x.stamp} – <b>${escapeHtml(x.unit)}</b>: ${escapeHtml(x.text)}</li>`).join("")||"<li>Keine Einträge</li>";
-let cmd=commands.map(x=>`<li>${x.stamp} – <b>${escapeHtml(x.unit)}</b>: ${escapeHtml(x.task)} · ${statusLabel(x.status)}</li>`).join("")||"<li>Keine Einträge</li>";
-let as=asTeams.map(x=>`<div class="card"><b>${escapeHtml(x.trupp)}</b><br>Truppführer: ${escapeHtml(x.tf)} · Truppmann: ${escapeHtml(x.tm)}<br>Anschluss: ${x.connectTime} · Startdruck: ${x.startdruck} bar<br>${x.events.map(e=>`${e.stamp} – ${e.type}${e.pressure!=null?" · "+e.pressure+" bar":""}${e.note?" · "+escapeHtml(e.note):""}`).join("<br>")||"Keine Ereignisse"}</div>`).join("")||"<div class='muted'>Keine Atemschutzüberwachung dokumentiert.</div>";
-let ph=photos.map(x=>`<div class="card"><b>${escapeHtml(x.section)}</b><div class="muted">${x.stamp}</div><p>${escapeHtml(x.caption)}</p><img src="${x.data}" alt="${escapeHtml(x.caption)}" style="max-width:100%;border-radius:10px"></div>`).join("");
-reportContent.innerHTML=`<h3>${escapeHtml(incident.keyword)} · ${escapeHtml(incident.type||"")}</h3>
-<p><b>Meldebild:</b> ${escapeHtml(incident.report||"–")}<br><b>Ort:</b> ${escapeHtml(incident.street)}, ${escapeHtml(incident.city)}<br><b>Objekt:</b> ${escapeHtml(incident.object||"–")}<br><b>Hinweise:</b> ${escapeHtml(incident.notes||"–")}<br><b>Beginn:</b> ${new Date(incident.startedAt).toLocaleString("de-DE")}<br><b>Aktuelle Dauer:</b> ${elapsed()}</p>
-<h3>Besetzung bei Einsatzbeginn</h3><ul>${crew}</ul>
-<h3>Erkundung / Lage</h3><p>${escapeHtml(answers.lage||"–")}</p>
-<h3>AAACEEE</h3><ul>${haz}</ul>
-<h3>Beurteilung / Entschluss</h3><p><b>Beurteilung:</b> ${escapeHtml(answers.beurteilung||"–")}<br><b>Entschluss:</b> ${escapeHtml(answers.entschluss||"–")}</p>
-<h3>Befehle</h3><ul>${cmd}</ul>
-<h3>Rückmeldungen</h3><ul>${fb}</ul>
-<h3>Überwachung / Lageänderungen</h3><p>${escapeHtml(answers.ueberwachung||"–")}</p>
-<h3>Atemschutzüberwachung</h3>${as}
-<h3>Fotodokumentation</h3>${ph||"<div class='muted'>Keine Fotos.</div>"}
-<h3>Chronik</h3><ul>${log.map(e=>`<li>${escapeHtml(e.stamp)} – ${escapeHtml(e.text)}</li>`).join("")}</ul>`
-}
-function renderIncidentBar(){
-const bar=document.getElementById("incidentBar");
-if(!incident){bar.classList.remove("active");return}
-bar.classList.add("active");
-document.getElementById("topIncidentType").textContent=incident.type||"Einsatz";
-document.getElementById("topIncidentKeyword").textContent=incident.keyword||"–";
-document.getElementById("topIncidentAddress").textContent=`${incident.street||"–"} · ${incident.city||"–"}`;
-document.getElementById("topIncidentStart").textContent=new Date(incident.startedAt).toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"});
-document.getElementById("topIncidentDuration").textContent=elapsed();
-}
-function renderAll(){
-renderRoles();renderLog();renderStandardChecks();renderFeedbackUnits();renderFeedback();renderCommands();renderAS();renderHome();renderReport();renderIncidentBar();
-document.getElementById("unitSubtitle").textContent=unitName?unitName+" · Führungsunterstützung für den Einheitsführer":"Führungsunterstützung für den Einheitsführer";
-document.getElementById("unitNameInput").value=unitName;
-let activeTrupps=["Angriffstrupp","Wassertrupp","Schlauchtrupp"].filter(r=>current[r]);asTrupp.innerHTML=activeTrupps.map(r=>`<option>${r}</option>`).join("")||"<option>Angriffstrupp</option>";
-}
-function startIncident(){
-let type=startType.value,keyword=startKeyword.value.trim(),report=startReport.value,street=startStreet.value.trim(),city=startCity.value.trim();if(!keyword||!street||!city){toast("Einsatzart, Einsatzstichwort und Einsatzort bitte ausfüllen");return}
-incident={type,keyword,report,street,city,object:startObject.value.trim(),notes:startNotes.value.trim(),startedAt:new Date().toISOString()};
-current={...standard};names={};log=[];answers={};step=0;asTeams=[];feedbacks=[];commands=[];photos=[];
-localStorage.setItem("incident",JSON.stringify(incident));persist();addLog(`Einsatz gestartet · ${type} · ${keyword} · ${street}, ${city}.`);show("home");toast("Einsatz angelegt")
-}
-function openModal(title,body,actions){modalTitle.textContent=title;modalBody.innerHTML=body;modalActions.innerHTML=actions.map(a=>`<button class="btn ${a[2]==='secondary'?'secondary':''}" onclick="${a[1]}">${a[0]}</button>`).join("");modal.classList.add("show")}
-function closeModal(){modal.classList.remove("show")}
-function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-
-// v14: official Hessian Einsatzstichwort/Meldebild hierarchy (source: HLFS/HMdIS/HMSI, 2023-2029)
-const v14Data={
-Brand:[
-["F 1",["Brand – PKW","Brand – Mülltonne","Brand – Gerümpel im Freien","gelöschtes Feuer / Nachschau","ähnliche Meldebilder"]],
-["F 2",["Wohnungsbrand","Dachstuhlbrand","Kellerbrand","Zimmerbrand","Kaminbrand","Rauchentwicklung","ähnliche Meldebilder"]],
-["F 2 Y",["Brand in Wohngebäuden mit Menschenleben in Gefahr"]],
-["F 3",["Ausgedehnter Brand in Sondergebäuden","Hochhaus","Gewerbebetrieb","Schreinerei","Kfz-Werkstatt","Pension","Lagerplatz","Produktions- und/oder Lagergebäude","ähnliche Meldebilder"]],
-["F 3 Y",["Ausgedehnter Brand in Sondergebäuden mit Menschenleben in Gefahr"]],
-["F 4",["Brand als Großschadenslage"]],
-["F BMA",["Brand – Meldung einer Brandmeldeanlage"]],
-["F BUS Y",["Brand eines besetzten Busses mit großer Anzahl von Menschenleben in Gefahr"]],
-["F FLUG 1 Y",["Brand nach Flugunfall – Kleinflugzeug","Sportmaschine","Segelflieger / Paraglider","Hubschrauber","Heißluftballon","Militärmaschine"]],
-["F FLUG 2 Y",["Brand nach Flugunfall – Großflugzeug"]],
-["F GAS 1",["Brand – einzelner Gasflaschen","einer Gasleitung"]],
-["F GAS 2",["Brand eines Gastanks","Gastankfahrzeugs","Gaskesselwagens"]],
-["F LKW",["Brand eines LKW","Brand eines Busses ohne Personen","Brand einer landwirtschaftlichen Arbeitsmaschine in Feldgemarkung"]],
-["F ZUG",["Brand eines Schienenfahrzeugs ohne Menschenleben in Gefahr"]],
-["F ZUG Y",["Brand eines Schienenfahrzeugs mit großer Anzahl von Menschenleben in Gefahr"]],
-["F RWM",["Brand – Meldung eines ausgelösten (Heim-)Rauchwarnmelders"]],
-["F SCHIFF 1",["Brand eines Sportboots","Segelboots","Yacht"]],
-["F SCHIFF 2",["Brand eines Frachtschiffes"]],
-["F SCHIFF 2 Y",["Brand eines Personenschiffes","Personen- oder Fahrzeugfähre mit großer Anzahl von Menschenleben in Gefahr"]],
-["F SCHIFF 2 GEFAHR",["Brand eines Schiffes mit Gefahrgut","Tankschiff","Containerschiff","Frachtschiff","ähnliche Meldebilder"]],
-["F WALD 1",["Brand eines Waldes, einer Wiese oder eines Feldes mit geringer oder keiner Ausbreitungsgefahr","unbekannte Lage in Wald, Wiese oder Feld","Windenergieanlage außerhalb des Waldes"]],
-["F WALD 2",["Brand eines Waldes, einer Wiese oder eines Feldes mit Gefahr der weiteren Ausdehnung","Windenergieanlage im Wald"]]
-],
-Hilfeleistung:[
-["H 1",["Wasser im Keller","Wasserrohrbruch","Tür- und Fenstersicherung","Baum oder Gegenstand auf der Straße","Tier in Not oder Unfall mit Tier","einfache technische Hilfeleistung an Bächen, Seen oder in Hafenbereichen","Ölspur","kleine Mengen Betriebsstoffe aufnehmen","ähnliche Meldebilder"]],
-["H 1 Y",["Notfall-Türöffnung","Person im Aufzug","Tragehilfe für den Rettungsdienst","ähnliche Meldebilder"]],
-["H 2",["Fahrzeug umgestürzt","Bauunfall","Gerüsteinsturz","Kran umgestürzt","Unfall mit Einsturz von beteiligten Objekten ohne Menschenleben in Gefahr","ähnliche Meldebilder"]],
-["H ABST Y",["Person in Absturzgefahr","droht zu springen"]],
-["H ELEK",["Unfall in großen elektrischen Anlagen / Hochspannungsanlagen"]],
-["H EINST Y",["Gebäudeeinsturz","Bauunfall","Gerüsteinsturz","Kran umgestürzt","Unfall mit Einsturz von beteiligten Objekten","Person verschüttet mit Menschenleben in Gefahr","ähnliche Meldebilder"]],
-["H FLUSS",["Einfache technische Hilfeleistung auf Flüssen"]],
-["H FLUSS Y",["Person in Fluss"]],
-["H WASS Y",["Person in Wasser – Bach","See","Hafenbereich","ähnliche Meldebilder"]],
-["H GAS 1",["Gasgeruch"]],
-["H GAS 2",["Unfall mit Gasausströmung","Beschädigung einer Gasleitung","eines Gastanks","eines Gastankfahrzeugs","eines Gaskesselwagens"]],
-["H GEFAHR 1",["Unfall mit Gefahrstoffaustritt aus einzelnen Gebinden","Chemikalien (Säure o.ä.)","Kraftstoffen (Benzin o.ä.)","größeren Mengen Öl","Gefahrstoff im begrenzten Umfang","Chlorgas im Schwimmbad"]],
-["H GEFAHR 2",["Unfall mit Gefahrstoffaustritt aus Tankfahrzeug","Tankcontainer","Kesselwaggon","vergleichbar großen Mengen"]],
-["H KLEMM 1 Y",["Person eingeklemmt in PKW/LKW nach VU","Kfz / Maschine","eCall-Notruf","Person verschüttet"]],
-["H KLEMM 2 Y",["Mehrere Personen eingeklemmt in Bus nach VU","Kfz / Maschine","Mehrere Personen verschüttet"]],
-["H ÖL FLUSS",["Öl auf Fluss"]],
-["H ÖL WASS",["Öl auf Gewässer – Bach","See","Hafenbereich","ähnliche Meldebilder"]],
-["H RADIOAKTIV",["Unfall mit radioaktiven Stoffen"]],
-["H SCHIFF",["Havarie oder Kollision eines Personen- oder Frachtschiffes oder einer Fähre","Schiff auf Grund gelaufen oder droht zu sinken","größerer Wassereintritt in Boot / Schiff ohne Menschenleben in Gefahr"]],
-["H SCHIFF Y 1",["Havarie oder Kollision eines Personen- oder Frachtschiffes oder einer Fähre","Schiff auf Grund gelaufen oder droht zu sinken","größerer Wassereintritt in Boot / Schiff mit geringer Anzahl von Menschenleben in Gefahr"]],
-["H SCHIFF Y 2",["Havarie oder Kollision eines Personen- oder Frachtschiffes oder einer Fähre","Schiff auf Grund gelaufen oder droht zu sinken","größerer Wassereintritt in Boot / Schiff mit großer Anzahl von Menschenleben in Gefahr"]],
-["H ZUG 1 Y",["Person unter Zug / U- / S-Bahn / Straßenbahn","Kollision eines Zuges mit einem Straßenfahrzeug"]],
-["H ZUG 2 Y",["Unfall eines Zuges / einer U- / S-Bahn / Straßenbahn","Kollision zweier Züge mit großer Anzahl von Menschenleben in Gefahr"]],
-["H UNWETTER STURM",["wind-, schnee- oder hagelbedingte Schäden durch flächenhafte Unwetterlagen","Baum umgestürzt","Dach abgedeckt/eingestürzt","Schäden durch umhergewehte Gegenstände","Sicherung von Gebäudeteilen und Gegenständen","Befreiung von Schneelasten"]],
-["H UNWETTER WASSER",["Wasserschäden durch flächenhafte Unwetterlagen","Wasser im Keller, in Tiefgaragen und Unterführungen","Straße überflutet","Kfz steckt im Wasser fest","andere Einsätze mit Schäden durch Wasser"]]
-],
-Rettung:[
-["K",["Qualifizierter Krankentransport; ärztliche Einweisung"]],
-["R 0 K",["Minderdringlicher Notfalleinsatz nach Indikationsliste für den N-KTW"]],
-["R 0",["Notfalleinsatz unterhalb der Indikationsliste für den Notarzt, ohne erforderliches Sondersignal"]],
-["R 1",["Notfalleinsatz unterhalb der Indikationsliste für den Notarzt, mit angeordnetem Sondersignal"]],
-["R 2",["Notfalleinsatz mit einem Notarztsystem; akut lebensbedrohliche Situationen nach Notarzt-Indikationsliste"]],
-["R 3",["Notarzteinsatz alleine bei akut lebensbedrohlichen Situationen"]],
-["R LEBEL",["Notfalleinsatz bei lebensbedrohlichen Einsatzlagen für das Einsatzpersonal im Zusammenhang mit bewaffneten Gewalttätern"]],
-["R MANV",["Notfall mit großer Anzahl von Verletzten und/oder Erkrankten sowie Betroffenen"]],
-["R MR",["Mobile Rettungswache zur Bereichsabdeckung oder Wachverschiebungen von Einsatzmitteln"]],
-["BA",["Einsatzunabhängige befristete Außerdienstnahme eines Einsatzmittels"]]
-]};
-function v14FillStartKeywords(){
- const t=document.getElementById("startType"),k=document.getElementById("startKeyword"),r=document.getElementById("startReport");
- if(!t||!k||!r)return;
- const oldK=k.value, data=v14Data[t.value]||[];
- k.innerHTML='<option value="">Bitte Einsatzstichwort auswählen</option>'+data.map(x=>`<option value="${escapeHtml(x[0])}">${escapeHtml(x[0])}</option>`).join("");
- if(data.some(x=>x[0]===oldK))k.value=oldK;
- v14FillReports();
-}
-function v14FillReports(){
- const t=document.getElementById("startType"),k=document.getElementById("startKeyword"),r=document.getElementById("startReport");
- const data=v14Data[t.value]||[], found=data.find(x=>x[0]===k.value);
- r.innerHTML='<option value="">Bitte Meldebild auswählen</option>'+((found?found[1]:[]).map(x=>`<option>${escapeHtml(x)}</option>`).join(""));
-}
-document.getElementById("startType")?.addEventListener("change",v14FillStartKeywords);
-document.getElementById("startKeyword")?.addEventListener("change",v14FillReports);
-v14FillStartKeywords();
-
-function v14RenderStandardNames(){
- const box=document.getElementById("standardNames"); if(!box)return;
- const keys=["Einheitsführer","Melder","Maschinist","Angriffstrupp · Truppführer","Angriffstrupp · Truppmann","Wassertrupp · Truppführer","Wassertrupp · Truppmann","Schlauchtrupp · Truppführer","Schlauchtrupp · Truppmann"];
- box.innerHTML=keys.map(k=>`<div class="v14-name-row"><span>${escapeHtml(k)}</span><input data-standard-name="${escapeHtml(k)}" value="${escapeHtml((JSON.parse(localStorage.getItem("standardCrewNames")||"{}"))[k]||"")}" placeholder="Name optional"></div>`).join("");
-}
-function v14SaveStandardNames(){
- const obj={};document.querySelectorAll("[data-standard-name]").forEach(i=>obj[i.dataset.standardName]=i.value.trim());
- localStorage.setItem("standardCrewNames",JSON.stringify(obj));
-}
-const oldSaveStandardCrew=window.saveStandardCrew;
-window.saveStandardCrew=function(){
- if(typeof oldSaveStandardCrew==="function")oldSaveStandardCrew();
- v14SaveStandardNames(); toast("Standardbesetzung gespeichert");
+const KEY='efu15_';
+const roleDefs=[{id:'einheitsfuehrer',label:'Einheitsführer',required:true},{id:'melder',label:'Melder'},{id:'maschinist',label:'Maschinist'},{id:'angriffstrupp',label:'Angriffstrupp',team:true},{id:'wassertrupp',label:'Wassertrupp',team:true},{id:'schlauchtrupp',label:'Schlauchtrupp',team:true}];
+const subDefs=[{id:'tf',label:'Truppführer'},{id:'tm',label:'Truppmann'}];
+const hazards=['Atemgifte','Angstreaktion / Panik','Ausbreitung der Gefahr','Atomare Gefahren / ionisierende Strahlung','Chemische Gefahren','Erkrankung / Verletzung','Explosion','Elektrizität','Einsturz'];
+const kw={
+Brand:[['F 1',['Brand – PKW','Brand – Mülltonne','Brand – Gerümpel im Freien','gelöschtes Feuer','Nachschau','ähnliches Meldebild'],{staffel:1,water:'500 l',as:1} ],['F 2',['Brand – Wohnungsbrand','Brand – Dachstuhlbrand','Brand – Kellerbrand','Brand – Zimmerbrand','Brand – Kaminbrand','Rauchentwicklung','ähnliches Meldebild'],{gruppen:2,water:'1.000 l',as:3}],['F 2 Y',['Brand in Wohngebäuden mit Menschenleben in Gefahr'],{gruppen:2,water:'1.000 l',as:4}],['F 3',['Ausgedehnter Brand in Sondergebäuden','Hochhaus','Gewerbebetrieb','Schreinerei','Kfz-Werkstatt','Pension','Lagerplatz','Produktions- und/oder Lagergebäude','ähnliches Meldebild'],{gruppen:3,water:'3.600 l',as:5}],['F 3 Y',['Ausgedehnter Brand in Sondergebäuden mit Menschenleben in Gefahr'],{gruppen:3,as:6}],['F 4',['Brand als Großschadenslage'],{gruppen:6,water:'8.000 l',as:10}],['F BMA',['Brand – Meldung einer Brandmeldeanlage'],{staffeln:2,water:'1.000 l',as:3}],['F BUS Y',['Brand eines besetzten Busses mit großer Anzahl von Menschenleben in Gefahr'],{gruppen:3,water:'5.000 l',as:6}],['F FLUG 1 Y',['Brand nach Flugunfall – Kleinflugzeug / Sportmaschine / Segelflieger / Hubschrauber / Heißluftballon / Militärmaschine'],{gruppen:2,water:'2.500 l',as:4}],['F FLUG 2 Y',['Brand nach Flugunfall – Großflugzeug'],{gruppen:6,water:'15.000 l',as:10}],['F GAS 1',['Brand – einzelne Gasflasche / Gasleitung / Gaskessel'],{gruppen:2,as:3}],['F GAS 2',['Brand – Gastank / Gastankfahrzeug / Gaskesselwagen'],{gruppen:3,water:'5.000 l',as:5}],['F LKW',['Brand – LKW / Bus ohne Personen / landwirtschaftliche Arbeitsmaschine'],{gruppen:2,water:'5.000 l',as:3}],['F ZUG',['Brand eines Schienenfahrzeugs ohne Menschenleben in Gefahr'],{gruppen:2,water:'5.000 l',as:3}],['F ZUG Y',['Brand eines Schienenfahrzeugs mit großer Anzahl von Menschenleben in Gefahr'],{gruppen:6,as:10}],['F RWM',['Brand – ausgelöster Heim-Rauchwarnmelder'],{staffel:1,water:'500 l',as:2}],['F SCHIFF 1',['Brand Sportboot / Segelboot / Yacht'],{gruppen:2,as:3}],['F SCHIFF 2',['Brand Frachtschiff'],{gruppen:3,as:5}],['F SCHIFF 2 Y',['Brand Personenschiff / Personen- oder Fahrzeugfähre mit großer Anzahl Menschenleben in Gefahr'],{gruppen:3,as:5}],['F SCHIFF 2 GEFAHR',['Brand Schiff mit Gefahrgut'],{gruppen:6,as:5}],['F WALD 1',['Brand Wald / Wiese / Feld mit geringer oder keiner Ausbreitungsgefahr','unbekannte Lage Wald / Wiese / Feld','Windenergieanlage außerhalb Wald'],{gruppen:2,as:2}],['F WALD 2',['Brand Wald / Wiese / Feld mit Ausbreitungsgefahr','Windenergieanlage im Wald'],{gruppen:3,as:4}]],
+Hilfeleistung:[['H 1',['Wasser im Keller','Wasserrohrbruch','Tür- und Fenstersicherung','Baum oder Gegenstand auf der Straße','Tier in Not / Unfall mit Tier','einfache technische Hilfeleistung an Bächen, Seen oder Hafenbereichen','Ölspur','kleine Mengen Betriebsstoffe','ähnliches Meldebild'],{staffel:1}],['H 1 Y',['Notfall-Türöffnung','Person im Aufzug','Tragehilfe für Rettungsdienst','ähnliches Meldebild'],{staffel:1}],['H 2',['Fahrzeug umgestürzt','Bauunfall','Gerüsteinsturz','Kran umgestürzt','Unfall mit Einsturz beteiligter Objekte ohne Menschenleben in Gefahr'],{gruppe:1}],['H ABST Y',['Person in Absturzgefahr','droht zu springen'],{gruppen:2}],['H ELEK',['Unfall in großen elektrischen Anlagen / Hochspannungsanlagen'],{gruppe:1}],['H EINST Y',['Gebäudeeinsturz','Bauunfall','Gerüsteinsturz','Kran umgestürzt','Person verschüttet mit Menschenleben in Gefahr','ähnliches Meldebild'],{gruppen:3}],['H FLUSS',['Einfache technische Hilfeleistung auf Flüssen'],{gruppe:1}],['H FLUSS Y',['Person in Fluss'],{gruppen:2}],['H WASS Y',['Person in Wasser – Bach / See / Hafenbereich','ähnliches Meldebild'],{gruppen:2}],['H GAS 1',['Gasgeruch'],{gruppe:1,as:2}],['H GAS 2',['Unfall mit Gasausströmung / Beschädigung Gasleitung / Gastank / Gastankfahrzeug / Gaskesselwagen'],{gruppen:2,as:4}],['H GEFAHR 1',['Unfall mit Gefahrstoffaustritt aus einzelnen Gebinden / Chemikalien / Kraftstoffen / größeren Mengen Öl / Chlorgas im Schwimmbad'],{gruppen:2,as:4}],['H GEFAHR 2',['Unfall mit Gefahrstoffaustritt aus Tankfahrzeug / Tankcontainer / Kesselwaggon oder vergleichbar großen Mengen'],{gruppen:2,as:4}],['H KLEMM 1 Y',['Person eingeklemmt in PKW/LKW nach VU, Kfz/Maschine, eCall-Notruf; Person verschüttet'],{gruppen:2}],['H KLEMM 2 Y',['Mehrere Personen eingeklemmt in Bus nach VU / Kfz / Maschine; mehrere Personen verschüttet'],{gruppen:4}],['H ÖL FLUSS',['Öl auf Fluss'],{gruppen:2}],['H ÖL WASS',['Öl auf Gewässer – Bach / See / Hafenbereich','ähnliches Meldebild'],{gruppen:2}],['H RADIOAKTIV',['Unfall mit radioaktiven Stoffen'],{gruppen:2}],['H SCHIFF',['Havarie / Kollision Personen- oder Frachtschiff / Fähre ohne Menschenleben in Gefahr'],{gruppen:3}],['H SCHIFF Y 1',['Havarie / Kollision Schiff / Fähre mit geringer Anzahl Menschenleben in Gefahr'],{gruppen:3}],['H SCHIFF Y 2',['Havarie / Kollision Schiff / Fähre mit großer Anzahl Menschenleben in Gefahr'],{gruppen:6}],['H ZUG 1 Y',['Person unter Zug / U-Bahn / S-Bahn / Straßenbahn; Kollision Zug mit Straßenfahrzeug'],{gruppen:2}],['H ZUG 2 Y',['Unfall eines Zuges / U-Bahn / S-Bahn / Straßenbahn; Kollision zweier Züge mit großer Anzahl Menschenleben in Gefahr'],{gruppen:6}],['H UNWETTER STURM',['Wind-, Schnee- oder hagelbedingte Schäden durch flächenhafte Unwetterlagen','Baum umgestürzt','Dach abgedeckt/eingestürzt','Sicherung von Gebäudeteilen und Gegenständen','Befreiung von Schneelasten'],{staffel:1}],['H UNWETTER WASSER',['Wasserschäden durch flächenhafte Unwetterlagen','Wasser im Keller / Tiefgarage / Unterführung','Straße überflutet','Kfz im Wasser'],{staffel:1}]],
+Rettung:[['K',['Qualifizierter Krankentransport; ärztliche Einweisung'],{rd:'1 KTW / N-KTW / MZF'}],['R 0 K',['Minderdringlicher Notfalleinsatz nach Indikationsliste N-KTW'],{rd:'1 N-KTW / RTW / MZF'}],['R 0',['Notfalleinsatz unterhalb Notarzt-Indikationsliste ohne Sonderrechte'],{rd:'1 RTW / MZF'}],['R 1',['Notfalleinsatz unterhalb Notarzt-Indikationsliste mit Sondersignal'],{rd:'1 RTW / MZF',first:'N-KTW First Responder möglich'}],['R 2',['Notfalleinsatz mit Notarztsystem / akut lebensbedrohliche Situation'],{rd:'1 RTW / MZF + 1 NEF / RTH / ITH / NAW'}],['R 3',['Notarzteinsatz alleine'],{rd:'1 NEF / NAW / RTH / ITH'}],['R LEBEL',['Notfalleinsatz bei lebensbedrohlichen Einsatzlagen für Einsatzpersonal im Zusammenhang mit bewaffneten Gewalttätern'],{rd:'1 RTW / MZF + 1 NEF / RTH / ITH / NAW'}],['R MANV',['Notfall mit großer Anzahl Verletzter / Erkrankter / Betroffener'],{rd:'nach örtlicher MANV-Schwelle'}],['R MR',['Mobile Rettungswache'],{rd:'1 RTW / MZF ohne Sondersignal'}],['W',['Einsatzunabhängige befristete Außerdienstnahme eines Einsatzmittels'],{rd:'Ersatz-/Sonderregelungen örtlich'}]]
 };
-
-const oldStartIncident=window.startIncident;
-window.startIncident=function(){
- const k=document.getElementById("startKeyword"),r=document.getElementById("startReport");
- if(!k.value||!r.value){toast("Bitte Einsatzstichwort und Meldebild auswählen");return}
- const stdNames=JSON.parse(localStorage.getItem("standardCrewNames")||"{}");
- if(typeof oldStartIncident==="function")oldStartIncident();
- // oldStartIncident resets names; replace with configured standard names.
- names={...stdNames};
- localStorage.setItem("crewNames",JSON.stringify(names));
- if(typeof window.renderAll==="function")window.renderAll();
-};
-
-const oldRenderIncidentBar=window.renderIncidentBar;
-window.renderIncidentBar=function(){
- if(typeof oldRenderIncidentBar==="function")oldRenderIncidentBar();
- const el=document.getElementById("topIncidentReport");
- if(el)el.textContent=window.incident?.report||"–";
-};
-
-function saveMapV14(){
- const text=document.getElementById("mapV14Text")?.value.trim(); if(!text){toast("Bitte Lagekartenänderung beschreiben");return}
- const map=JSON.parse(localStorage.getItem("v14Map")||'{"version":0,"changes":[]}');
- map.version=(map.version||0)+1;map.changes.push({version:map.version,description:text,at:new Date().toISOString()});
- localStorage.setItem("v14Map",JSON.stringify(map));
- addLog(`Lagekarte gespeichert · Version ${map.version}: ${text}`);
- document.getElementById("mapV14Text").value="";v14RenderMap();toast("Lagekarte gespeichert");
-}
-function v14RenderMap(){
- const box=document.getElementById("mapV14List");if(!box)return;
- const map=JSON.parse(localStorage.getItem("v14Map")||'{"version":0,"changes":[]}');
- box.innerHTML=map.changes.length?map.changes.slice().reverse().map(x=>`<div class="event"><b>Version ${x.version}</b><div>${escapeHtml(x.description)}</div></div>`).join(""):"<div class='muted'>Noch keine gespeicherten Änderungen.</div>";
-}
-v14RenderStandardNames();v14RenderMap();
-
-setInterval(()=>{if(incident){homeDuration.textContent=elapsed();document.getElementById("topIncidentDuration").textContent=elapsed();renderAS();}},1000);
-renderSafetyChecks("safetyChecks");renderAll();
-if(!incident)show("start");else show("home");
-if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
-</script>
-<div class="v12modal" id="v12Modal" role="dialog" aria-modal="true">
-<div class="v12sheet">
-<h3 id="v12Title">Dokumentieren</h3>
-<div id="v12Body"></div>
-<div class="v12grid" style="margin-top:10px">
-<button type="button" class="v12btn" id="v12Cancel">Abbrechen</button>
-<button type="button" class="v12btn ok" id="v12Save">Speichern</button>
-</div>
-</div></div>
-
-<script id="v12-enhancements">
-(function(){
-const $=s=>document.querySelector(s);
-const get=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
-const set=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
-let v12Round=Number(localStorage.getItem("v12Round")||1);
-let v12Map= get("v12Map",{version:0,description:"",changes:[]});
-let v12Rounds=get("v12Rounds",[]);
-const modal=$("#v12Modal"), title=$("#v12Title"), body=$("#v12Body");
-function logV12(type,text){
-  const arr=get("incidentLog",[]);
-  const now=new Date();
-  const started=window.incident&&incident.startedAt?new Date(incident.startedAt):null;
-  const ms=started?Math.max(0,now-started):0;
-  const hh=String(Math.floor(ms/3600000)).padStart(2,"0"), mm=String(Math.floor(ms/60000)%60).padStart(2,"0"), ss=String(Math.floor(ms/1000)%60).padStart(2,"0");
-  arr.push({date:now.toLocaleDateString("de-DE"),time:now.toLocaleTimeString("de-DE"),elapsed:`+${hh}:${mm}:${ss}`,type,text});
-  set("incidentLog",arr);
-  if(typeof window.renderAll==="function") window.renderAll();
-}
-function open(kind){
- if(!window.incident){alert("Bitte zuerst einen Einsatz starten.");return}
- if(kind==="feedback"){
-  title.textContent="📣 Rückmeldung"; body.innerHTML='<textarea id="v12Text" placeholder="Rückmeldung / Auftrag erfüllt / Problem / Lageänderung"></textarea>';
- } else if(kind==="command"){
-  title.textContent="📢 Aktuellen Befehl dokumentieren"; body.innerHTML='<div class="v12small">Einheit · Auftrag · Mittel · Ziel · Weg</div><textarea id="v12Text" placeholder="Befehl kurz dokumentieren"></textarea>';
- } else if(kind==="safety"){
-  title.textContent="⚠️ Lageänderung / Eigene Sicherheit"; body.innerHTML='<div class="v12small">Neue Gefahr · Personenlage · eigene Kräfte · Ausbreitung · Einsturz · Elektrizität · Wetter · Sonstiges</div><textarea id="v12Text" placeholder="Was hat sich geändert?"></textarea>';
- } else if(kind==="as"){
-  title.textContent="🫁 Atemschutz – Schnellere Dokumentation"; body.innerHTML='<textarea id="v12Text" placeholder="Druckmeldung, Einsatzziel, Rückzug oder sonstiges Ereignis"></textarea>';
- } else if(kind==="map"){
-  title.textContent="🗺️ Lagekarte – Version speichern"; body.innerHTML='<div class="v12small">Diese v12 speichert die Lagekarten-Versionen als Dokumentationsstand. Eine echte Kartenzeichnung folgt als eigener technischer Baustein.</div><textarea id="v12Text" placeholder="Beschreibung der Lagekartenänderung"></textarea>';
- } else if(kind==="report"){
-  title.textContent="📋 Einsatzbericht"; body.innerHTML='<div class="v12small">Der aktuelle Bericht wird aus den vorhandenen Einsatzdaten erzeugt.</div><button type="button" class="v12btn" id="v12Print" style="margin-top:8px">🖨️ Bericht drucken / PDF</button>';
-  setTimeout(()=>$("#v12Print")?.addEventListener("click",()=>window.print()),0);
- }
- modal.classList.add("show"); $("#v12Text")?.focus();
-}
-function close(){modal.classList.remove("show")}
-document.addEventListener("click",e=>{
- const b=e.target.closest("[data-v12]"); if(b) open(b.dataset.v12);
-});
-$("#v12Cancel")?.addEventListener("click",close);
-$("#v12Save")?.addEventListener("click",()=>{
- const text=$("#v12Text")?.value.trim()||"";
- if(!text){alert("Bitte kurz dokumentieren.");return}
- const kind=title.textContent;
- if(kind.includes("Lageänderung")){
-   v12Round++; localStorage.setItem("v12Round",String(v12Round));
-   v12Rounds.push({round:v12Round,at:new Date().toISOString(),reason:text}); set("v12Rounds",v12Rounds);
-   logV12("Lageänderung / neuer Führungskreislauf",text);
- } else if(kind.includes("Lagekarte")){
-   v12Map.version++; v12Map.description=text; v12Map.changes.push({version:v12Map.version,at:new Date().toISOString(),description:text}); set("v12Map",v12Map);
-   logV12("Lagekarte gespeichert",`Version ${v12Map.version}: ${text}`);
- } else logV12(kind.replace(/[^\p{L}\p{N} /-]/gu,"").trim()||"Dokumentation",text);
- $("#v12Round").textContent="Führungskreislauf "+v12Round;
- close();
-});
-$("#v12Round").textContent="Führungskreislauf "+v12Round;
-})();
-</script>
-<script id="v13-functional">
-(function(){
-const q=s=>document.querySelector(s);
-const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}};
-const write=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
-const trupps=["Angriffstrupp","Wassertrupp","Schlauchtrupp"];
-let names=read("crewNames",{});
-let crew=read("currentCrew",{"Einheitsführer":true,"Melder":true,"Maschinist":true,"Angriffstrupp":true,"Wassertrupp":true,"Schlauchtrupp":true});
-let archive=read("incidentArchive",[]);
-function logV(type,text){
- const a=read("incidentLog",[]),d=new Date(),st=window.incident?.startedAt?new Date(window.incident.startedAt):null;
- const ms=st?Math.max(0,d-st):0;
- const e="+"+String(Math.floor(ms/3600000)).padStart(2,"0")+":"+String(Math.floor(ms/60000)%60).padStart(2,"0")+":"+String(Math.floor(ms/1000)%60).padStart(2,"0");
- a.push({date:d.toLocaleDateString("de-DE"),time:d.toLocaleTimeString("de-DE"),elapsed:e,type,text});write("incidentLog",a);
- if(typeof window.renderAll==="function") window.renderAll();
-}
-function modal(title,body,save){
- const m=document.createElement("div");m.className="v13-modal";
- m.innerHTML='<div class="v13-sheet"><h3>'+title+'</h3><div>'+body+'</div><div class="v13-actions"><button type="button" class="v13-action" id="v13Cancel">Abbrechen</button><button type="button" class="v13-action ok" id="v13Save">Speichern</button></div></div>';
- document.body.appendChild(m);m.querySelector("#v13Cancel").onclick=()=>m.remove();m.querySelector("#v13Save").onclick=()=>save(m);
- return m;
-}
-function openCrew(){
- let h='<div class="v13-muted">Namen sind optional. Sie werden von Rückmeldungen und Atemschutz übernommen.</div><div class="v13-section">';
- ["Einheitsführer","Melder","Maschinist"].forEach(r=>h+=`<div class="v13-person"><strong>${r}</strong><input data-role="${r}" value="${(names[r]||"").replace(/"/g,"&quot;")}" placeholder="Name optional"></div>`);
- trupps.forEach(t=>{h+=`<div class="v13-sub"><strong>${t}</strong>`;
- ["Truppführer","Truppmann"].forEach(s=>{const k=t+" · "+s;h+=`<div class="v13-person"><strong>${s}</strong><input data-role="${k}" value="${(names[k]||"").replace(/"/g,"&quot;")}" placeholder="Name optional"></div>`});
- h+="</div>";});h+="</div>";
- modal("👨‍🚒 Kräfteübersicht",h,m=>{m.querySelectorAll("[data-role]").forEach(i=>names[i.dataset.role]=i.value.trim());write("crewNames",names);logV("Kräfteübersicht geändert","Namen der Einsatzbesetzung aktualisiert.");m.remove()});
-}
-function openFeedback(){
- let o=["Einheitsführer","Melder","Maschinist"].filter(x=>crew[x]!==false).map(x=>`<option>${x}</option>`);
- trupps.filter(t=>crew[t]!==false).forEach(t=>{o.push(`<option>${t} – Truppführer</option>`);o.push(`<option>${t} – Truppmann</option>`)});
- modal("📣 Rückmeldung",`<div class="v13-field"><label>Von wem?</label><select id="vf">${o.join("")}</select></div><div class="v13-field"><label>Art</label><select id="vk"><option>Rückmeldung</option><option>Auftrag erfüllt</option><option>Problem / Unterstützung erforderlich</option><option>Lageänderung</option></select></div><div class="v13-field"><label>Meldung</label><textarea id="vm" placeholder="Kurze Meldung"></textarea></div>`,m=>{
- const msg=m.querySelector("#vm").value.trim();if(!msg)return alert("Bitte Meldung eingeben.");
- const a=read("feedbacks",[]);a.push({from:m.querySelector("#vf").value,kind:m.querySelector("#vk").value,text:msg,at:new Date().toISOString()});write("feedbacks",a);logV("Rückmeldung",m.querySelector("#vf").value+": "+msg);m.remove();
-});
-}
-function openAS(){
- let opts=trupps.filter(t=>crew[t]!==false).map(t=>`<option>${t}</option>`).join("");
- modal("🫁 Atemschutzüberwachung",`<div class="v13-field"><label>Trupp</label><select id="at"><option value="">Bitte auswählen</option>${opts}</select></div><div class="v13-field"><label>Truppführer</label><input id="atf" required placeholder="Name erforderlich"></div><div class="v13-field"><label>Truppmann</label><input id="atm" required placeholder="Name erforderlich"></div><div class="v13-field"><label>Anfangsdruck</label><input id="ap" inputmode="numeric" placeholder="bar"></div><div class="v13-field"><label>Erwartete Einsatzzeit</label><input id="az" inputmode="numeric" placeholder="Minuten"></div>`,m=>{
- const t=m.querySelector("#at").value,tf=m.querySelector("#atf").value.trim(),tm=m.querySelector("#atm").value.trim();if(!t||!tf||!tm)return alert("Trupp, Truppführer und Truppmann sind erforderlich.");
- const a=read("asTeams",[]);a.push({trupp:t,truppfuehrer:tf,truppmann:tm,startPressure:m.querySelector("#ap").value,expectedMinutes:m.querySelector("#az").value,connectedAt:new Date().toISOString(),active:true});write("asTeams",a);logV("Atemschutz","Überwachung gestartet: "+t+" ("+tf+" / "+tm+")");m.remove();
-});
-}
-function openSafety(){
- modal("⚠️ Lageänderung / Eigene Sicherheit",'<div class="v13-field"><label>Was hat sich geändert?</label><textarea id="ls" placeholder="Neue Gefahr, Personenlage, eigene Kräfte, Ausbreitung ..."></textarea></div>',m=>{
- const t=m.querySelector("#ls").value.trim();if(!t)return alert("Bitte Lageänderung dokumentieren.");
- const r=Number(localStorage.getItem("v13Round")||1)+1;localStorage.setItem("v13Round",String(r));logV("Lageänderung / neuer Führungskreislauf","Runde "+r+": "+t);m.remove();
-});
-}
-function openMap(){
- const map=read("v13Map",{version:0,changes:[]});
- modal("🗺️ Lagekarte – Lage speichern",`<div class="v13-muted">Gespeicherte Lagekartenstände werden versioniert und in der Chronik dokumentiert.</div><div class="v13-field"><label>Beschreibung der Änderung</label><textarea id="mt" placeholder="Was wurde geändert?"></textarea></div><div class="v13-muted">Letzte Version: ${map.version||0}</div>`,m=>{
- const t=m.querySelector("#mt").value.trim();if(!t)return alert("Bitte Änderung beschreiben.");
- map.version=(map.version||0)+1;map.changes.push({version:map.version,description:t,at:new Date().toISOString()});write("v13Map",map);logV("Lagekarte gespeichert","Version "+map.version+": "+t);m.remove();
-});
-}
-function finish(){
- if(!window.incident)return alert("Kein aktiver Einsatz.");
- const name=names["Einheitsführer"]||"";
- const m=modal("⏹ Einsatz beenden",`<div class="v13-muted">Der Einsatz wird nach der Bestätigung archiviert und der aktive Einsatz beendet.</div><div class="v13-field"><label>Name Einheitsführer</label><input id="en" value="${name.replace(/"/g,"&quot;")}" placeholder="Name"></div><div class="v13-field"><label>Unterschrift</label><canvas id="sig" width="600" height="150" style="width:100%;background:#fff;border-radius:8px;touch-action:none"></canvas></div>`,m=>{
- const n=m.querySelector("#en").value.trim();if(!n)return alert("Bitte Namen eingeben.");
- const end=new Date().toISOString();archive.push({...window.incident,endedAt:end,leader:n,signature:m.querySelector("#sig").toDataURL("image/png"),incidentLog:read("incidentLog",[]),crew:names,feedbacks:read("feedbacks",[]),commands:read("commands",[]),asTeams:read("asTeams",[]),map:read("v13Map",{version:0,changes:[]})});write("incidentArchive",archive);
- ["incident","incidentLog","feedbacks","commands","asTeams","v13Map","v13Round"].forEach(k=>localStorage.removeItem(k));alert("Einsatz abgeschlossen und archiviert.");location.reload();
- });
- const c=m.querySelector("#sig"),ctx=c.getContext("2d");let down=false,last;
- c.addEventListener("pointerdown",e=>{down=true;const r=c.getBoundingClientRect();last={x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height};c.setPointerCapture(e.pointerId)});
- c.addEventListener("pointermove",e=>{if(!down)return;const r=c.getBoundingClientRect(),p={x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height};ctx.strokeStyle="#111";ctx.lineWidth=3;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p});
- c.addEventListener("pointerup",()=>down=false);c.addEventListener("pointercancel",()=>down=false);
-}
-document.addEventListener("click",e=>{
- const b=e.target.closest("[data-v13]");if(!b)return;const k=b.dataset.v13;
- if(k==="crew")openCrew();else if(k==="feedback")openFeedback();else if(k==="as")openAS();else if(k==="safety")openSafety();else if(k==="map")openMap();else if(k==="commands")alert("Bitte den vorhandenen Befehlsbereich verwenden; die Schnellübersicht ist nur der direkte Einstieg.");else if(k==="report"){if(typeof window.renderReport==="function")window.renderReport();setTimeout(()=>window.print(),100)}else if(k==="lead"){document.querySelector("#leadership")?.scrollIntoView({behavior:"smooth"})}
-});
-function addEnd(){
- if(!window.incident||document.querySelector("#v13End"))return;
- const host=document.querySelector("main")||document.body,d=document.createElement("div");d.id="v13End";d.className="v13-section";
- d.innerHTML='<strong>⏹ Einsatzabschluss</strong><div class="v13-muted">Einsatz vollständig dokumentiert? Dann hier beenden.</div><button type="button" class="v13-action danger" id="v13EndButton">⏹ Einsatz beenden</button>';
- host.appendChild(d);d.querySelector("#v13EndButton").onclick=finish;
-}
-setInterval(addEnd,800);addEnd();
-})();
+function ls(k,d){try{return JSON.parse(localStorage.getItem(KEY+k)||'null')??d}catch{return d}}function save(k,v){localStorage.setItem(KEY+k,JSON.stringify(v))}
+let standard=ls('standard',{einheitsfuehrer:{on:true,name:''},melder:{on:true,name:''},maschinist:{on:true,name:''},angriffstrupp:{on:true,tf:{on:true,name:''},tm:{on:true,name:''}},wassertrupp:{on:true,tf:{on:true,name:''},tm:{on:true,name:''}},schlauchtrupp:{on:true,tf:{on:true,name:''},tm:{on:true,name:''}}});
+let crew=ls('crew',null);let incident=ls('incident',null);let logs=ls('logs',[]),feedbacks=ls('feedbacks',[]),commands=ls('commands',[]),asLogs=ls('asLogs',[]),photos=ls('photos',[]),mapVersions=ls('mapVersions',[]),rounds=ls('rounds',[]),roundIndex=ls('roundIndex',0),currentStep=ls('currentStep',0),unitName=localStorage.getItem(KEY+'unitName')||'';
+let mapObj=null,mapLayers=[],mapModeState='draw',drawStart=null,drawLine=null;
+const steps=[{n:'Erkundung / Lage',q:'Was stellst du fest?',type:'text',key:'erkundung'},{n:'AAACEEE',q:'Welche Gefahren sind vorhanden oder unklar?',type:'aaac'},{n:'Beurteilung',q:'Wie beurteilst du die Lage?',type:'text',key:'beurteilung'},{n:'Entschluss',q:'Was ist dein Entschluss?',type:'choice',key:'entschluss'},{n:'Befehl',q:'Welchen Befehl gibst du?',type:'befehl',key:'befehl'},{n:'Überwachung / Kontrolle',q:'Was überwachst du und welche Rückmeldung liegt vor?',type:'text',key:'ueberwachung'}];
+const entChoices=['Menschenrettung durchführen','Brandbekämpfung einleiten','Gefahrenbereich sichern','Ausbreitung verhindern','Rettungsmaßnahmen unterstützen','Freier Entschluss'];
+const safetyItems=['Neue Gefahr','Personenlage','Gefährdung eigener Kräfte','Ausbreitung','Einsturz','Elektrizität','Wetter / Umgebung','Sonstiges'];
+function fmtDate(d){return new Date(d).toLocaleDateString('de-DE')}function fmtTime(d){return new Date(d).toLocaleTimeString('de-DE')}function dur(ms){ms=Math.max(0,ms);let s=Math.floor(ms/1000),h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;return `+${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}function stamp(){if(!incident)return{date:'',time:'',elapsed:''};let now=Date.now();return{date:fmtDate(now),time:fmtTime(now),elapsed:dur(now-incident.start)}}
+function addLog(type,text,extra={}){if(!incident)return;logs.unshift({id:Date.now()+Math.random(),type,text,...stamp(),...extra});save('logs',logs)}
+function toast(t){let x=document.getElementById('toast');x.textContent=t;x.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>x.style.display='none',2400)}
+function show(id){if(!incident&&id!=='start'&&id!=='settings'){id='home'}document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));({home:'navHome',kraefte:'navCrew',feedback:'navFb',doku:'navLog'}[id]&&document.getElementById({home:'navHome',kraefte:'navCrew',feedback:'navFb',doku:'navLog'}[id]).classList.add('active'));renderAll();if(id==='lagekarte')setTimeout(initMap,50)}
+function incidentHeader(){let b=document.getElementById('incidentBar');b.classList.toggle('active',!!incident);if(!incident)return;document.getElementById('ibKeyword').textContent=`${incident.keyword} · ${incident.type.toUpperCase()}`;document.getElementById('ibMeldebild').textContent=incident.meldebild||'Meldebild –';document.getElementById('ibLocation').textContent=`📍 ${incident.street}, ${incident.zip} ${incident.city}`;document.getElementById('ibStart').textContent=`🕐 ${fmtTime(incident.start)}`;document.getElementById('ibTimer').textContent=`⏱️ ${dur(Date.now()-incident.start)}`}
+setInterval(incidentHeader,1000);
+function populateKeywords(){let type=document.getElementById('startType').value;let s=document.getElementById('startKeyword');s.innerHTML=kw[type].map(x=>`<option value="${esc(x[0])}">${esc(x[0])}</option>`).join('');populateMelde();}
+function populateMelde(){let type=document.getElementById('startType').value,k=document.getElementById('startKeyword').value;let rec=kw[type].find(x=>x[0]===k);document.getElementById('startMeldebild').innerHTML=(rec?rec[1]:[]).map(x=>`<option>${esc(x)}</option>`).join('');renderKeywordInfo()}
+function renderKeywordInfo(){let type=document.getElementById('startType').value,k=document.getElementById('startKeyword').value,rec=kw[type].find(x=>x[0]===k),p=rec?rec[2]:{};let parts=[];if(p.gruppen)parts.push(`${p.gruppen} Gruppen`);if(p.gruppe)parts.push(`${p.gruppe} Gruppe`);if(p.staffeln)parts.push(`${p.staffeln} Staffeln`);if(p.staffel)parts.push(`${p.staffel} Staffel`);if(p.as)parts.push(`${p.as} Atemschutztrupps`);if(p.water)parts.push(p.water+' Wasser');if(p.rd)parts.push(p.rd);document.getElementById('keywordInfo').innerHTML=rec?`<b>Alarmierte Kräfte / Parameter</b><br>${esc(parts.join(' · ')||'–')}<br><span class="muted">Nur Information; kein Soll-Ist-Vergleich mit der eigenen Besetzung.</span>`:'–'}
+function startIncident(){let type=startType.value,keyword=startKeyword.value,meldebild=startMeldebild.value,street=startStreet.value.trim(),zip=startZip.value.trim(),city=startCity.value.trim();if(!keyword||!meldebild||!street||!zip||!city){toast('Bitte Einsatzstichwort, Meldebild und Einsatzort ausfüllen.');return}if(incident){toast('Es läuft bereits ein Einsatz.');return}incident={id:Date.now(),type,keyword,meldebild,street,zip,city,object:startObject.value.trim(),notes:startNotes.value.trim(),start:Date.now(),end:null};crew=JSON.parse(JSON.stringify(standard));save('incident',incident);save('crew',crew);logs=[];feedbacks=[];commands=[];asLogs=[];photos=[];mapVersions=[];rounds=[];roundIndex=0;currentStep=0;save('logs',logs);save('feedbacks',feedbacks);save('commands',commands);save('asLogs',asLogs);save('photos',photos);save('mapVersions',mapVersions);save('rounds',rounds);save('roundIndex',0);save('currentStep',0);addLog('Einsatz','Einsatz gestartet');toast('Einsatz gestartet');show('home')}
+function renderHome(){if(!incident){document.getElementById('homeContent').innerHTML=`<div class="banner"><b>KEIN LAUFENDER EINSATZ</b><h1>🚨 Bereit für den Einsatz</h1><p>Der erste Schritt ist immer die Einsatzaufnahme.</p></div><div class="card"><button class="btn full" onclick="show('start')">🚨 Einsatz starten</button><button class="btn secondary full" onclick="show('settings')">⚙️ Standardbesetzung konfigurieren</button></div>`;return}document.getElementById('homeContent').innerHTML=`<div class="banner"><b>AKTIVER EINSATZ</b><h1>${esc(incident.keyword)}</h1><p>${esc(incident.meldebild)} · ${esc(incident.street)}, ${esc(incident.zip)} ${esc(incident.city)}</p></div><div class="quick"><b>⚡ EINSATZ-SCHNELLÜBERSICHT</b><div class="quickGrid"><button onclick="show('dialog')">🔄 Führungskreislauf</button><button onclick="show('kraefte')">👨‍🚒 Kräfte</button><button onclick="show('feedback')">📣 Rückmeldungen</button><button onclick="show('commands')">📢 Befehle</button><button onclick="show('atemschutz')">🫁 Atemschutz</button><button onclick="openSafety()">⚠️ Lageänderung</button><button onclick="show('lagekarte')">🗺️ Lagekarte</button><button onclick="show('report')">📋 Einsatzbericht</button></div></div><div class="card"><h2>🚨 ALARMIERTE KRÄFTE</h2><div id="alarmInfo"></div></div><div class="card"><h2>⏹ EINSATZ ABSCHLIESSEN</h2><div class="muted">Abschluss mit Übersicht, Einheitsführer und Unterschrift.</div><button class="btn danger full" onclick="openEndIncident()">⏹ Einsatz beenden</button></div>`;renderAlarmInfo()}
+function renderAlarmInfo(){if(!incident)return;let rec=kw[incident.type].find(x=>x[0]===incident.keyword);let p=rec?rec[2]:{};let text=[];if(p.gruppen)text.push(`${p.gruppen} Gruppen`);if(p.gruppe)text.push(`${p.gruppe} Gruppe`);if(p.staffeln)text.push(`${p.staffeln} Staffeln`);if(p.staffel)text.push(`${p.staffel} Staffel`);if(p.as)text.push(`${p.as} Atemschutztrupps`);if(p.water)text.push(p.water+' Wasser');if(p.rd)text.push(p.rd);document.getElementById('alarmInfo').innerHTML=`<div class="row"><span>${text.join(' · ')||'Keine Feuerwehrkräfteangabe im Datensatz'}</span><span class="badge blue">Info</span></div><div class="muted">Abgeleitet aus dem hessischen Einsatzstichwort-Erlass. Keine Soll-Ist-Bewertung.</div>`}
+function allPeople(){let out=[];for(const r of roleDefs){let v=crew[r.id];if(!v||!v.on)continue;if(r.team){for(const s of subDefs){if(v[s.id]?.on)out.push({id:`${r.id}.${s.id}`,label:`${r.label} – ${s.label}`,name:v[s.id].name||'' ,team:r.label,sub:s.label})}}else out.push({id:r.id,label:r.label,name:v.name||'',team:r.label,sub:''})}return out}
+function unitOptions(includeLeader=true){return allPeople().filter(p=>includeLeader||p.team!=='Einheitsführer')}
+function crewStatus(team){let active=commands.find(c=>c.unitId===team&&['active','prep'].includes(c.status));if(active)return active.status==='prep'?['🟡','In Vorbereitung','yellow']:['🔴','Im Einsatz','red'];let done=commands.find(c=>c.unitId===team&&c.status==='done');return ['🟢','Bereit','green']}
+function renderCrew(){if(!incident)return;let html='';for(const r of roleDefs){let v=crew[r.id];if(!v||!v.on)continue;if(r.team){let [icon,label,cl]=crewStatus(r.id);html+=`<div class="roleCard"><div class="roleHead"><b>${r.label}</b><span class="badge ${cl}">${icon} ${label}</span></div>`;for(const s of subDefs){if(v[s.id]?.on)html+=`<div class="subrole"><b>${s.label}</b> · ${esc(v[s.id].name||'Name nicht eingetragen')}</div>`}let cmd=commands.find(c=>c.unitId===r.id&&['active','prep'].includes(c.status));let fb=feedbacks.find(f=>f.unitId?.startsWith(r.id+'.')||f.unitId===r.id);html+=`<div class="muted" style="margin-top:7px">${cmd?`Auftrag: <b>${esc(cmd.task)}</b>`:'Kein aktueller Auftrag'}${fb?` · Letzte Rückmeldung: ${esc(fb.text)}`:''}</div></div>`}else html+=`<div class="row"><span><b>${r.label}</b><br><span class="muted">${esc(v.name||'Name nicht eingetragen')}</span></span><span class="badge green">Vorhanden</span></div>`}document.getElementById('crewOverview').innerHTML=html;document.getElementById('crewOrders').innerHTML=roleDefs.filter(r=>r.team&&crew[r.id]?.on).map(r=>{let c=commands.find(x=>x.unitId===r.id&&['active','prep'].includes(x.status));return `<div class="orderCard"><div class="orderTop"><b>${r.label}</b><span class="badge ${c?(c.status==='active'?'red':'yellow'):'green'}">${c?(c.status==='active'?'🔴 Im Einsatz':'🟡 In Vorbereitung'):'🟢 Bereit'}</span></div><div class="text">${c?esc(c.task):'Kein Auftrag'}</div><div class="meta">${c?`seit ${c.time} · ${c.elapsed}`:'Auftrag kann über Befehle vergeben werden'}</div></div>`}).join('')||'<div class="muted">Keine Trupps vorhanden.</div>'}
+function openCrewEdit(){let html='<div class="muted">Änderungen gelten nur für diesen Einsatz und werden dokumentiert.</div>';for(const r of roleDefs){let v=crew[r.id];html+=`<div class="roleCard"><label class="choice"><input type="checkbox" id="ce_${r.id}" ${v?.on?'checked':''} ${r.required?'disabled':''} onchange="toggleCrewEdit('${r.id}')"> <b>${r.label}</b></label>`;if(r.team){for(const s of subDefs){let sv=v?.[s.id]||{on:false,name:''};html+=`<div class="subindent" id="ceSub_${r.id}_${s.id}" style="display:${v?.on?'block':'none'}"><label class="choice"><input type="checkbox" id="ce_${r.id}_${s.id}" ${sv.on?'checked':''}> <b>${s.label}</b></label><input id="ceName_${r.id}_${s.id}" value="${escAttr(sv.name)}" placeholder="Name optional"></div>`}}else html+=`<div id="ceNameWrap_${r.id}"><input id="ceName_${r.id}" value="${escAttr(v?.name||'')}" placeholder="Name optional"></div>`;html+='</div>'}openModal('Besetzung für diesen Einsatz ändern',html,`<button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveCrewEdit()">Übernehmen</button>`)}
+function toggleCrewEdit(id){let el=document.getElementById('ce_'+id);document.querySelectorAll(`[id^="ceSub_${id}_"]`).forEach(x=>x.style.display=el.checked?'block':'none')}
+function saveCrewEdit(){let old=JSON.stringify(crew);for(const r of roleDefs){let on=document.getElementById('ce_'+r.id).checked;crew[r.id].on=on;if(r.team){for(const s of subDefs){crew[r.id][s.id].on=on?document.getElementById(`ce_${r.id}_${s.id}`).checked:false;crew[r.id][s.id].name=on?document.getElementById(`ceName_${r.id}_${s.id}`).value.trim():''}}else crew[r.id].name=on?document.getElementById(`ceName_${r.id}`).value.trim():''}save('crew',crew);if(old!==JSON.stringify(crew))addLog('Besetzung','Aktuelle Einsatzbesetzung geändert');closeModal();renderAll();toast('Besetzung übernommen')}
+function renderFeedbackSelects(){let opts=unitOptions().map(p=>`<option value="${escAttr(p.id)}">${esc(p.label+(p.name?' – '+p.name:''))}</option>`).join('');fbUnit.innerHTML=opts;cmdUnit.innerHTML=roleDefs.filter(r=>r.team&&crew[r.id]?.on).map(r=>`<option value="${r.id}">${r.label}</option>`).join('')}
+function saveFeedback(){let id=fbUnit.value,text=fbText.value.trim();if(!id||!text){toast('Quelle und Rückmeldung sind erforderlich.');return}let p=allPeople().find(x=>x.id===id);let f={id:Date.now(),unitId:id,unit:p?.label||id,name:p?.name||'',text,kind:fbKind.value,...stamp()};feedbacks.unshift(f);save('feedbacks',feedbacks);addLog('Rückmeldung',`${f.unit}${f.name?' – '+f.name:''}: ${text}`,{unitId:id});if(f.kind==='done'){let team=p?.team; if(team){let c=commands.find(x=>x.unitId===team&&['active','prep'].includes(x.status));if(c){c.status='done';c.doneAt=Date.now();commands.unshift(commands.splice(commands.indexOf(c),1)[0]);save('commands',commands);addLog('Auftrag erledigt',`${team}: ${c.task}`)}}}fbText.value='';renderAll();toast('Rückmeldung gespeichert')}
+function renderFeedback(){let list=feedbacks.slice(0,15).map(f=>`<div class="feedback"><div class="meta">${f.date} · ${f.time} · ${f.elapsed}</div><b>${esc(f.unit)}${f.name?' · '+esc(f.name):''}</b><div class="text">${esc(f.text)}</div><div class="meta">${kindLabel(f.kind)}</div></div>`).join('');document.getElementById('feedbackList').innerHTML=list||'<div class="muted">Noch keine Rückmeldungen.</div>'}
+function kindLabel(k){return {normal:'Rückmeldung',done:'Auftrag erfüllt',support:'Problem / Unterstützung erforderlich',change:'Lageänderung'}[k]||k}
+function saveCommand(){let unit=cmdUnit.value,task=cmdTask.value.trim();if(!unit||!task){toast('Einheit und Auftrag sind erforderlich.');return}commands.filter(c=>c.unitId===unit&&['active','prep'].includes(c.status)).forEach(c=>{c.status='changed';c.changedAt=Date.now()});let c={id:Date.now(),unitId:unit,unit:roleDefs.find(r=>r.id===unit)?.label||unit,task,means:cmdMeans.value.trim(),target:cmdTarget.value.trim(),way:cmdWay.value.trim(),status:cmdStatus.value,...stamp()};commands.unshift(c);save('commands',commands);addLog('Befehl',`${c.unit}: ${c.task}`,{unitId:unit});cmdTask.value='';cmdMeans.value='';cmdTarget.value='';cmdWay.value='';renderAll();toast('Auftrag dokumentiert')}
+function renderCommands(){document.getElementById('commandList').innerHTML=commands.slice(0,20).map(c=>`<div class="command"><div class="orderTop"><b>${esc(c.unit)}</b><span class="badge ${c.status==='active'?'red':c.status==='done'?'green':c.status==='prep'?'yellow':'blue'}">${statusLabel(c.status)}</span></div><div class="text">${esc(c.task)}</div><div class="meta">${c.date} · ${c.time} · ${c.elapsed}${c.means?' · Mittel: '+esc(c.means):''}</div></div>`).join('')||'<div class="muted">Noch keine Befehle.</div>'}function statusLabel(s){return{active:'🔴 Im Einsatz',prep:'🟡 In Vorbereitung',ready:'🟢 Bereit',done:'✅ Erledigt',changed:'🔵 Geändert'}[s]||s}
+function openSafety(){show('safety')}
+function renderSafety(){document.getElementById('safetyChecks').innerHTML=safetyItems.map(x=>`<label class="choice"><input type="checkbox" value="${escAttr(x)}"> ${esc(x)}</label>`).join('')}
+let pendingSafetyPhoto=null;document.getElementById('safetyPhoto').addEventListener('change',e=>{let f=e.target.files?.[0];if(!f)return;let r=new FileReader();r.onload=()=>{pendingSafetyPhoto=r.result;document.getElementById('safetyPreview').innerHTML=`<div class="photoBox"><img src="${r.result}" alt="Einsatzfoto"></div>`};r.readAsDataURL(f)});
+function saveSafety(){let selected=[...document.querySelectorAll('#safetyChecks input:checked')].map(x=>x.value),text=safetyText.value.trim();if(!text){toast('Bitte die Lageänderung beschreiben.');return}if(pendingSafetyPhoto)photos.unshift({id:Date.now(),src:pendingSafetyPhoto,date:fmtDate(Date.now()),time:fmtTime(Date.now()),elapsed:dur(Date.now()-incident.start),context:'Lageänderung'});save('photos',photos);let oldRound=roundIndex;addLog('Lageänderung',text,{hazards:selected,round:oldRound+1});rounds.push({round:roundIndex,endedAt:Date.now(),reason:'Lageänderung',erkundung:rounds[roundIndex]?.erkundung||'',});roundIndex++;currentStep=0;rounds[roundIndex]={round:roundIndex,startedAt:Date.now(),answers:{}};save('rounds',rounds);save('roundIndex',roundIndex);save('currentStep',0);save('feedbacks',feedbacks);safetyText.value='';pendingSafetyPhoto=null;document.getElementById('safetyPreview').innerHTML='';show('dialog');toast(`Neuer Führungskreislauf ${roundIndex+1} gestartet – Erkundung`);renderDialog()}
+function renderDialog(){if(!incident)return;let idx=Math.max(0,Math.min(currentStep,steps.length-1)),s=steps[idx];document.getElementById('progress').innerHTML=steps.map((_,i)=>`<div class="seg ${i<idx?'done':i===idx?'now':''}"></div>`).join('');document.getElementById('stepLabel').textContent=`Führungskreislauf ${roundIndex+1} · Schritt ${idx+1} von ${steps.length}`;document.getElementById('question').textContent=s.q;let c='';if(s.type==='text'){let val=rounds[roundIndex]?.answers?.[s.key]||'';c=`<textarea id="dlgText" rows="7" placeholder="Dokumentation des Einheitsführers …">${esc(val)}</textarea>`}else if(s.type==='aaac'){c=hazards.map((h,i)=>{let v=rounds[roundIndex]?.answers?.aaac?.[h]||'';return `<div class="choice"><b style="min-width:32px">${h.split(' ')[0]}</b><span style="flex:1">${esc(h)}</span><select data-h="${escAttr(h)}"><option value="">–</option><option ${v==='Ja'?'selected':''}>Ja</option><option ${v==='Unklar'?'selected':''}>Unklar</option><option ${v==='Nein'?'selected':''}>Nein</option></select></div>`}).join('')}else if(s.type==='choice'){let v=rounds[roundIndex]?.answers?.entschluss||'';c=entChoices.map(x=>`<label class="choice"><input type="radio" name="ent" value="${escAttr(x)}" ${v===x?'checked':''}> ${esc(x)}</label>`).join('')+`<label>Eigener Entschluss</label><textarea id="customEnt" rows="3" placeholder="Optional">${v&&!entChoices.includes(v)?esc(v):''}</textarea>`}else if(s.type==='befehl'){c=`<label>Einheit / Trupp *</label><select id="bUnit">${roleDefs.filter(r=>r.team&&crew[r.id]?.on).map(r=>`<option value="${r.id}">${r.label}</option>`).join('')}</select><label>Auftrag *</label><input id="bTask"><label>Mittel</label><input id="bMeans"><label>Ziel</label><input id="bTarget"><label>Weg</label><input id="bWay">`}document.getElementById('dialogContent').innerHTML=c;let buttons='';if(idx>0)buttons+=`<button class="btn secondary" onclick="prevStep()">← Zurück</button>`;else buttons+=`<span></span>`;buttons+=`<button class="btn" onclick="nextStep()">${idx===steps.length-1?'✓ Überwachung dokumentieren':'Weiter →'}</button>`;document.getElementById('dialogButtons').innerHTML=`<div class="actions">${buttons}</div>`}
+function nextStep(){let s=steps[currentStep],a=rounds[roundIndex].answers||{};if(s.type==='text'){let v=document.getElementById('dlgText').value.trim();if(!v){toast('Bitte dokumentieren.');return}a[s.key]=v}else if(s.type==='aaac'){a.aaac={};document.querySelectorAll('#dialogContent select[data-h]').forEach(x=>a.aaac[x.dataset.h]=x.value)}else if(s.type==='choice'){let r=document.querySelector('input[name="ent"]:checked')?.value||document.getElementById('customEnt').value.trim();if(!r){toast('Bitte Entschluss auswählen oder eingeben.');return}a.entschluss=r}else if(s.type==='befehl'){let u=bUnit.value,t=bTask.value.trim();if(!u||!t){toast('Einheit und Auftrag erforderlich.');return}a.befehl={unitId:u,task:t,means:bMeans.value.trim(),target:bTarget.value.trim(),way:bWay.value.trim()};commands.filter(c=>c.unitId===u&&['active','prep'].includes(c.status)).forEach(c=>c.status='changed');let c={id:Date.now(),unitId:u,unit:roleDefs.find(r=>r.id===u)?.label||u,task:t,means:bMeans.value.trim(),target:bTarget.value.trim(),way:bWay.value.trim(),status:'active',round:roundIndex,...stamp()};commands.unshift(c);save('commands',commands);addLog('Befehl',`${c.unit}: ${c.task}`,{round:roundIndex,unitId:u})}rounds[roundIndex].answers=a;save('rounds',rounds);addLog(s.n,a[s.key]||s.n,{round:roundIndex});if(currentStep<steps.length-1){currentStep++;save('currentStep',currentStep);renderDialog()}else{currentStep=steps.length-1;save('currentStep',currentStep);toast('Führungskreislauf überwacht – Lageänderung startet die nächste Runde.');renderDialog()}}
+function prevStep(){currentStep=Math.max(0,currentStep-1);save('currentStep',currentStep);renderDialog()}
+function renderAS(){let list=asLogs.map(a=>`<div class="asCard"><div class="orderTop"><b>${esc(a.team)} · ${esc(a.tf.name)} / ${esc(a.tm.name)}</b><span class="badge ${a.active?'red':'green'}">${a.active?'🔴 Aktiv':'🟢 Beendet'}</span></div><div class="meta">Anschluss ${a.connectTime} · 1/3 ${a.t1} · 2/3 ${a.t2}</div><div class="tableish"><div><b>Person</b></div><div><b>Startdruck</b></div><div><b>Letzte Meldung</b></div>${[a.tf,a.tm].map(p=>`<div>${esc(p.role)} · ${esc(p.name)}</div><div>${p.start} bar</div><div>${p.last??p.start} bar</div>`).join('')}</div><div class="actions"><button class="btn secondary" onclick="asUpdate(${a.id},'pressure')">Druckmeldung</button><button class="btn secondary" onclick="asUpdate(${a.id},'goal')">Einsatzziel</button><button class="btn secondary" onclick="asUpdate(${a.id},'withdraw')">Rückzug</button><button class="btn ${a.active?'danger':'secondary'}" onclick="asEnd(${a.id})">${a.active?'Überwachung beenden':'Abgeschlossen'}</button></div></div>`).join('');document.getElementById('asList').innerHTML=list||'<div class="muted">Noch keine Atemschutzüberwachung.</div>'}
+function asTeams(){return roleDefs.filter(r=>r.team&&crew[r.id]?.on&&crew[r.id]?.tf?.on&&crew[r.id]?.tm?.on)}function renderASSelect(){let sel=document.getElementById('asTrupp'),prev=sel.value;sel.innerHTML=asTeams().map(r=>`<option value="${r.id}">${r.label}</option>`).join('');if(prev&&[...sel.options].some(o=>o.value===prev))sel.value=prev;renderASPeople()}
+function renderASPeople(){let r=roleDefs.find(x=>x.id===asTrupp.value),v=r?crew[r.id]:null;if(!v){asPeopleForm.innerHTML='<div class="warnBox">Für diesen Trupp müssen Truppführer und Truppmann vorhanden sein.</div>';return}asPeopleForm.innerHTML=`<div class="asCard"><label>Truppführer *</label><input id="asTFName" value="${escAttr(v.tf.name||'')}" placeholder="Name des Truppführers"><label>Luftvorrat Truppführer (bar) *</label><input id="asTFPressure" type="number" min="0" max="400" placeholder="z. B. 300"><label>Truppmann *</label><input id="asTMName" value="${escAttr(v.tm.name||'')}" placeholder="Name des Truppmanns"><label>Luftvorrat Truppmann (bar) *</label><input id="asTMPressure" type="number" min="0" max="400" placeholder="z. B. 280"><label>Anschlusszeit *</label><input id="asConnect" type="time" value="${new Date().toTimeString().slice(0,5)}"></div>`}
+function registerAS(){let r=roleDefs.find(x=>x.id===asTrupp.value),v=crew[r.id],tf=document.getElementById('asTFName').value.trim(),tm=document.getElementById('asTMName').value.trim(),tp=Number(document.getElementById('asTFPressure').value),mp=Number(document.getElementById('asTMPressure').value),exp=Number(asExpected.value),ct=document.getElementById('asConnect').value;if(!r||!tf||!tm||!Number.isFinite(tp)||!Number.isFinite(mp)||!ct||!exp){toast('Trupp, beide Namen, beide Luftvorräte, Anschlusszeit und Einsatzzeit sind erforderlich.');return}let now=Date.now(),a={id:now,team:r.label,teamId:r.id,connectTime:ct,expected:exp,t1:Math.round(exp/3),t2:Math.round(exp*2/3),active:true,tf:{role:'Truppführer',name:tf,start:tp,last:tp},tm:{role:'Truppmann',name:tm,start:mp,last:mp},events:[]};asLogs.unshift(a);save('asLogs',asLogs);addLog('Atemschutz',`${a.team}: TF ${tf} ${tp} bar · TM ${tm} ${mp} bar`);renderAll();toast('Atemschutzüberwachung registriert')}
+function asUpdate(id,type){let a=asLogs.find(x=>x.id===id);if(!a)return;let label={pressure:'Druckmeldung',goal:'Einsatzziel erreicht',withdraw:'Rückzug begonnen'}[type];if(type==='pressure'){let t=prompt('Aktueller Druck Truppführer (bar)',a.tf.last);let m=prompt('Aktueller Druck Truppmann (bar)',a.tm.last);if(t===null||m===null)return;a.tf.last=Number(t);a.tm.last=Number(m)}a.events.push({type,label,date:fmtDate(Date.now()),time:fmtTime(Date.now()),elapsed:dur(Date.now()-incident.start),tf:a.tf.last,tm:a.tm.last});save('asLogs',asLogs);addLog('Atemschutz',`${a.team}: ${label}${type==='pressure'?` TF ${a.tf.last} bar · TM ${a.tm.last} bar`:''}`);renderAll()}
+function asEnd(id){let a=asLogs.find(x=>x.id===id);if(!a)return;a.active=false;a.endTime=fmtTime(Date.now());a.events.push({type:'end',label:'Überwachung beendet',date:fmtDate(Date.now()),time:fmtTime(Date.now()),elapsed:dur(Date.now()-incident.start)});save('asLogs',asLogs);addLog('Atemschutz',`${a.team}: Überwachung beendet`);renderAll()}
+function initMap(){if(mapObj||typeof L==='undefined'||!incident)return;mapObj=L.map('map',{zoomControl:true}).setView([50.98,9.8],15);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap-Mitwirkende'}).addTo(mapObj);mapObj.on('mousedown',e=>{if(mapModeState!=='draw')return;drawStart=e.latlng;drawLine=L.polyline([e.latlng],{color:'#d71920',weight:4}).addTo(mapObj);mapLayers.push(drawLine)});mapObj.on('mousemove',e=>{if(drawStart&&drawLine)drawLine.addLatLng(e.latlng)});mapObj.on('mouseup',()=>{drawStart=null;drawLine=null});mapObj.on('click',e=>{if(mapModeState==='marker'){let label=prompt('Lagekarten-Symbol / Bezeichnung','Bereitstellungsraum');if(!label)return;let m=L.marker(e.latlng).addTo(mapObj).bindTooltip(label,{permanent:true});m._efLabel=label;mapLayers.push(m)}});geocodeIncident()}
+async function geocodeIncident(){if(!mapObj||!incident)return;let q=encodeURIComponent(`${incident.street}, ${incident.zip} ${incident.city}, Deutschland`);try{let r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${q}`,{headers:{'Accept-Language':'de'}});let d=await r.json();if(d[0]){mapObj.setView([+d[0].lat,+d[0].lon],17);let m=L.marker([+d[0].lat,+d[0].lon]).addTo(mapObj).bindTooltip('Einsatzort',{permanent:true});m._efIncident=true;mapLayers.push(m)}}catch(e){toast('Karte geladen; Adresse konnte nicht automatisch geokodiert werden.')}}
+function mapMode(m){mapModeState=m;toast(m==='draw'?'Zeichenmodus aktiv':m==='marker'?'Symbolmodus aktiv':'Löschmodus aktiv');if(m==='erase'){let x=mapLayers.pop();if(x&&mapObj)mapObj.removeLayer(x);mapModeState='draw'}}
+function mapSnapshot(){return mapLayers.map(x=>{if(x.getLatLngs)return{kind:'line',points:x.getLatLngs().map(p=>[p.lat,p.lng])};if(x.getLatLng)return{kind:'marker',latlng:[x.getLatLng().lat,x.getLatLng().lng],label:x._efLabel||'',incident:!!x._efIncident};return null}).filter(Boolean)}
+function saveMapPrompt(){if(!mapObj){toast('Lagekarte noch nicht bereit.');return}let desc=prompt('Beschreibung der Lageänderung','');if(desc===null)return;let v={id:Date.now(),version:mapVersions.length+1,date:fmtDate(Date.now()),time:fmtTime(Date.now()),elapsed:dur(Date.now()-incident.start),description:desc,items:mapSnapshot()};mapVersions.push(v);save('mapVersions',mapVersions);addLog('Lagekarte',`Version ${v.version}${desc?': '+desc:''}`,{version:v.version});toast(`Lagekarte Version ${v.version} gespeichert`);renderMapVersions()}
+function renderMapVersions(){document.getElementById('mapVersions').innerHTML=mapVersions.slice().reverse().map(v=>`<div class="version"><b>Version ${v.version}</b> · ${v.date} · ${v.time} · ${v.elapsed}<br><span class="muted">${esc(v.description||'ohne Beschreibung')} · ${v.items.length} Kartenelemente</span></div>`).join('')||'<div class="muted">Noch keine gespeicherte Lage.</div>'}
+function renderStandard(){let html='';for(const r of roleDefs){let v=standard[r.id];html+=`<div class="roleCard"><label class="choice"><input type="checkbox" id="st_${r.id}" ${v?.on?'checked':''} ${r.required?'disabled':''} onchange="toggleStandard('${r.id}')"><b>${r.label}</b></label>`;if(r.team){for(const s of subDefs){let sv=v?.[s.id]||{on:false,name:''};html+=`<div class="subindent" id="stSub_${r.id}" style="display:${v?.on?'block':'none'}"><label class="choice"><input type="checkbox" id="st_${r.id}_${s.id}" ${sv.on?'checked':''}><b>${s.label}</b></label><input id="stName_${r.id}_${s.id}" value="${escAttr(sv.name)}" placeholder="Name optional"></div>`}}else html+=`<input id="stName_${r.id}" value="${escAttr(v?.name||'')}" placeholder="Name optional">`;html+='</div>'}document.getElementById('standardCrewForm').innerHTML=html}
+function toggleStandard(id){let c=document.getElementById('st_'+id);let x=document.getElementById('stSub_'+id);if(x)x.style.display=c.checked?'block':'none'}
+function saveStandardCrew(){for(const r of roleDefs){let v=standard[r.id];v.on=r.required?true:document.getElementById('st_'+r.id).checked;if(r.team){for(const s of subDefs){v[s.id].on=v.on?document.getElementById(`st_${r.id}_${s.id}`).checked:false;v[s.id].name=v.on?document.getElementById(`stName_${r.id}_${s.id}`).value.trim():''}}else v.name=v.on?document.getElementById(`stName_${r.id}`).value.trim():''}save('standard',standard);if(!incident){crew=JSON.parse(JSON.stringify(standard));save('crew',crew)}toast('Standardbesetzung gespeichert');renderAll()}
+function saveUnitName(){unitName=unitNameInput.value.trim();localStorage.setItem(KEY+'unitName',unitName);toast('Bezeichnung gespeichert')}
+function openEndIncident(){let openOrders=commands.filter(c=>['active','prep'].includes(c.status));let activeAS=asLogs.filter(a=>a.active);openModal('⏹ Einsatz beenden',`<div class="warnBox">Vor dem Abschluss bitte prüfen: ${openOrders.length} offene Aufträge · ${activeAS.length} aktive Atemschutzüberwachung.</div><div class="card" style="margin-top:9px"><b>${esc(incident.keyword)}</b><br>${esc(incident.meldebild)}<br>📍 ${esc(incident.street)}, ${esc(incident.zip)} ${esc(incident.city)}<br>🕐 ${fmtTime(incident.start)} · ⏱️ ${dur(Date.now()-incident.start)}</div><label>Einheitsführer</label><input id="endLeader" value="${escAttr(crew.einheitsfuehrer.name||'')}" placeholder="Name des Einheitsführers"><label>Unterschrift</label><canvas id="signature" class="signature"></canvas><div class="muted">Mit Bestätigung wird der Einsatz beendet und archiviert.</div>`, `<button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn danger" onclick="finishIncident()">Einsatz abschließen</button>`);setTimeout(initSignature,30)}
+let sigCtx=null,sigDrawing=false;function initSignature(){let c=document.getElementById('signature');if(!c)return;let ratio=Math.max(1,devicePixelRatio||1),rect=c.getBoundingClientRect();c.width=rect.width*ratio;c.height=rect.height*ratio;sigCtx=c.getContext('2d');sigCtx.scale(ratio,ratio);sigCtx.strokeStyle='#111';sigCtx.lineWidth=2;function pos(e){let r=c.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}c.onpointerdown=e=>{sigDrawing=true;let p=pos(e);sigCtx.beginPath();sigCtx.moveTo(p.x,p.y);c.setPointerCapture(e.pointerId)};c.onpointermove=e=>{if(!sigDrawing)return;let p=pos(e);sigCtx.lineTo(p.x,p.y);sigCtx.stroke()};c.onpointerup=()=>sigDrawing=false;c.onpointercancel=()=>sigDrawing=false}
+function finishIncident(){let leader=document.getElementById('endLeader').value.trim();if(!leader){toast('Name des Einheitsführers erforderlich.');return}let c=document.getElementById('signature');let sig=c?.toDataURL('image/png')||'';incident.end=Date.now();incident.endLeader=leader;incident.signature=sig;addLog('Einsatzende','Einsatz beendet');save('incident',incident);let archive=ls('archive',[]);archive.unshift({incident:JSON.parse(JSON.stringify(incident)),logs,feedbacks,commands,asLogs,photos,mapVersions,rounds,crew});save('archive',archive);toast('Einsatz beendet und archiviert');closeModal();renderAll();show('home')}
+function renderReport(){if(!incident){document.getElementById('reportContent').innerHTML='<div class="muted">Kein laufender Einsatz.</div>';return}let crewHtml=allPeople().map(p=>`<div>${esc(p.label)}${p.name?' – '+esc(p.name):''}</div>`).join('');document.getElementById('reportContent').innerHTML=`<div class="row"><b>Einsatzstichwort</b><span>${esc(incident.keyword)}</span></div><div class="row"><b>Meldebild</b><span>${esc(incident.meldebild)}</span></div><div class="row"><b>Einsatzort</b><span>${esc(incident.street)}, ${esc(incident.zip)} ${esc(incident.city)}</span></div><div class="row"><b>Beginn</b><span>${fmtDate(incident.start)} · ${fmtTime(incident.start)}</span></div>${incident.end?`<div class="row"><b>Ende</b><span>${fmtDate(incident.end)} · ${fmtTime(incident.end)} · ${dur(incident.end-incident.start)}</span></div>`:''}<div class="sectionTitle">BESATZUNG</div>${crewHtml}<div class="sectionTitle">CHRONIK</div>${logs.slice().reverse().map(e=>`<div class="event"><b>${esc(e.type)}</b><div>${esc(e.text)}</div><div class="meta">${e.date} · ${e.time} · ${e.elapsed}</div></div>`).join('')}<div class="sectionTitle">FOTOS</div><div class="photoGrid">${photos.map(p=>`<img src="${p.src}" alt="Einsatzfoto">`).join('')||'<span class="muted">Keine Fotos.</span>'}</div>${incident.end?`<div class="sectionTitle">ABSCHLUSS</div><div>Einheitsführer: <b>${esc(incident.endLeader)}</b></div>${incident.signature?`<img src="${incident.signature}" style="max-width:280px;margin-top:8px;background:#fff;border-radius:8px" alt="Unterschrift">`:''}`:''}<button class="btn full" onclick="window.print()">🖨️ Drucken / PDF</button>`}
+function renderTimeline(){document.getElementById('timeline').innerHTML=logs.slice().reverse().map(e=>`<div class="event"><b>${esc(e.type)}</b><div>${esc(e.text)}</div><div class="meta">${e.date} · ${e.time} · ${e.elapsed}</div></div>`).join('')||'<div class="muted">Noch keine Einträge.</div>'}
+function openModal(title,body,actions){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modalActions').innerHTML=actions;document.getElementById('modal').classList.add('show')}function closeModal(){document.getElementById('modal').classList.remove('show')}
+function renderAll(){incidentHeader();renderHome();renderCrew();renderFeedbackSelects();renderFeedback();renderCommands();renderSafety();renderASSelect();renderAS();renderMapVersions();renderStandard();unitNameInput.value=unitName;renderReport();renderTimeline();if(document.getElementById('dialog').classList.contains('active'))renderDialog()}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function escAttr(s){return esc(s).replace(/`/g,'&#96;')}
+startType.addEventListener('change',populateKeywords);startKeyword.addEventListener('change',populateMelde);
+window.addEventListener('beforeunload',e=>{if(mapModeState==='draw'&&drawLine){e.preventDefault();e.returnValue=''}});
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+populateKeywords();renderSafety();renderAll();if(incident)show('home');
 </script></body></html>
-<script>
-(function(){
-  const q=document.getElementById("v13QuickOverview"); if(q) q.remove();
-  // The Schnellübersicht exists only on the Home screen.
-  const observer=new MutationObserver(()=>{const h=document.getElementById("v14HomeQuick"); if(h) h.style.display=document.getElementById("home")?.classList.contains("active")?"":"none";});
-  observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"]});
-})();
-</script>

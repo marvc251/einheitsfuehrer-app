@@ -1,26 +1,33 @@
-# Einheitsführer-App v14 – Überarbeitung
+# Einheitsführer-App v15
 
-## Schwerpunkt dieser Version
-- Die permanente obere Einsatzübersicht bleibt im Header.
-- Die Einsatz-Schnellübersicht erscheint ausschließlich auf dem Homebild.
-- Einsatzstichwort ist ein Dropdown, gefiltert nach Einsatzart.
-- Meldebild ist ein Dropdown, gefiltert nach Einsatzstichwort.
-- Die Auswahl wird in die permanente Einsatzübersicht übernommen.
-- Einstellungen enthalten die Standardbesetzung und optionale Standardnamen.
-- Beim Einsatzstart werden Standardbesetzung und Standardnamen als aktuelle Einsatzbesetzung übernommen.
-- Lagekarten-Dokumentationsstand bleibt versioniert.
+Smartphone-/Tablet-PWA für den Einheitsführer, Feuerwehr Bebra / Hessen.
 
-## Datenbasis
-Die Einsatzstichwort-/Meldebildauswahl orientiert sich an der offiziellen hessischen Fassung des gemeinsamen Runderlasses zu Einsatzstichworten für Brand-, Hilfeleistungs- und Rettungsdiensteinsätze (gültig 01.01.2023 bis 31.12.2029).
-Quelle: HLFS/HMdIS/HMSI.
+## In v15 zusammengeführt
+- Globale, dauerhaft oben angeheftete Einsatzübersicht mit Einsatzstichwort, Meldebild, Einsatzort, Beginn und laufender Dauer.
+- Einsatz-Schnellübersicht ausschließlich auf Home.
+- Einsatzstart als erster Schritt mit Einsatzart, hessischem Einsatzstichwort und Meldebild, Einsatzort und Zusatzangaben.
+- Alarmierte Kräfte/Parameter als reine Information aus dem hessischen Einsatzstichwort-Erlass; kein Soll-Ist-Vergleich.
+- Standardbesetzung hierarchisch: Trupp vorhanden -> Truppführer/Truppmann einzeln anhaken -> Namen optional.
+- Aktuelle Einsatzbesetzung wird beim Einsatzstart aus der Standardbesetzung kopiert und ist einsatzbezogen änderbar.
+- Kräfteübersicht mit aktuellem Auftrag, Status und letzter Rückmeldung.
+- Befehle werden mit dem jeweiligen Trupp verknüpft; neuer Auftrag ändert den alten auf „Geändert“.
+- Rückmeldungen erlauben Einheitsführer, Melder, Maschinist sowie Truppführer/Truppmann der aktuellen Besetzung.
+- Atemschutzüberwachung mit Truppauswahl und individuellem Luftvorrat je Atemschutzgeräteträger.
+- Führungskreislauf als wiederholbare Runde; Lageänderung beendet die Runde und startet automatisch wieder bei Erkundung.
+- Lagekarte mit OpenStreetMap-Kartenausschnitt, Zeichnen, Symbolpunkten, Versionierung und Chronik.
+- Einsatzabschluss mit Übersicht, Einheitsführer, Unterschrift, Archiv und Bericht.
+- Chronik immer mit Datum, Uhrzeit und Dauer seit Einsatzbeginn.
+- Fotos aus der Einsatzdokumentation erscheinen im Einsatzbericht.
 
-## Testfokus
-1. Einsatzart ändern.
-2. Einsatzstichwort auswählen.
-3. Prüfen, dass nur passende Meldebilder erscheinen.
-4. Einsatz starten.
-5. Prüfen, dass oben Stichwort, Meldebild, Ort, Beginn und Dauer erscheinen.
-6. Auf andere Bereiche wechseln: nur die Einsatzübersicht bleibt oben; die Schnellübersicht ist dort nicht sichtbar.
-7. Home öffnen: Schnellübersicht erscheint wieder.
-8. Einstellungen → Standardbesetzung prüfen und speichern.
-9. Neuen Einsatz starten und prüfen, ob Standardbesetzung übernommen wird.
+## Quellen / Orientierung
+Die Einsatzstichworte sind an den hessischen gemeinsamen Runderlass zur Festlegung der Einsatzstichworte angelehnt (Inkrafttreten 01.01.2023, Außerkrafttreten 31.12.2029):
+https://hlfs.hessen.de/sites/hlfs.hessen.de/files/2022-09/einsatzstichworteerl-16.pdf
+
+Atemschutz ist an der in Hessen eingeführten FwDV 7 und den HLFS-Unterlagen orientiert:
+https://hlfs.hessen.de/dienstvorschriften-fuer-den-brand-und-katastrophenschutz
+https://hlfs.hessen.de/atemschutz-und-koerperschutz
+
+Die App ist ein Führungs-/Dokumentationshilfsmittel und ersetzt keine örtlichen AAO, Dienstanweisungen oder Führungsentscheidungen.
+
+## Test
+`index.html` direkt auf GitHub Pages veröffentlichen. Für die Lagekarte werden Internetzugang, Leaflet und OpenStreetMap/Nominatim benötigt.
