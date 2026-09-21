@@ -48,7 +48,20 @@ textarea,input,select{width:100%;background:#07182a;border:1px solid var(--line)
 .v12sheet h3{margin:0 0 8px}.v12sheet textarea{width:100%;min-height:90px;background:#071426;color:#fff;border:1px solid #315879;border-radius:9px;padding:9px}
 @media(min-width:700px){.v12sheet{border-radius:16px;margin-bottom:20px}.v12modal{align-items:center}}
 </style>
-</head>
+<style id="v13-styles">
+.v13-overview{background:#0b1b2e;border:1px solid #274765;border-radius:12px;padding:10px;margin:10px 0}
+.v13-title{font-size:13px;margin-bottom:8px}.v13-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.v13-btn,.v13-action{min-height:44px;border:1px solid #315879;border-radius:10px;background:#123152;color:#fff;padding:8px;font-weight:700}
+.v13-section{border:1px solid #274765;background:#0b1b2e;border-radius:12px;padding:11px;margin:9px 0}
+.v13-person{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:7px;align-items:center;padding:7px 0;border-top:1px solid #1d3850}
+.v13-person input,.v13-field input,.v13-field select,.v13-field textarea{width:100%;box-sizing:border-box;background:#071426;color:#fff;border:1px solid #315879;border-radius:8px;padding:9px;font-size:16px}
+.v13-sub{padding-left:14px}.v13-muted{font-size:11px;color:#aebfd0}.v13-field{margin:8px 0}.v13-field label{display:block;font-size:11px;color:#aebfd0;margin-bottom:4px}
+.v13-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.v13-action.ok{background:#123f34}.v13-action.danger{background:#541c25;border-color:#8b3845}
+.v13-modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;z-index:9999;padding:12px}
+.v13-sheet{width:min(680px,100%);max-height:92vh;overflow:auto;background:#091727;border:1px solid #2a4b68;border-radius:16px;padding:14px}
+.v13-sheet h3{margin:0 0 8px}
+@media(max-width:360px){.v13-grid{gap:6px}.v13-btn{font-size:11px}}
+</style></head>
 <body><div class="app">
 <header>
 <div class="brand">EINHEITSFÜHRER-APP</div>
@@ -61,16 +74,17 @@ textarea,input,select{width:100%;background:#07182a;border:1px solid var(--line)
     <span>⏱️ <span id="topIncidentDuration" class="timer">00:00:00</span></span>
   </div>
 </div>
-</header>
-<div id="v12Quick" class="v12panel">
-<div class="v12row"><strong>🚒 Einsatz-Cockpit</strong><span class="v12pill" id="v12Round">Führungskreislauf 1</span></div>
-<div class="v12grid" style="margin-top:8px">
-<button type="button" class="v12btn" data-v12="feedback">📣 Rückmeldung</button>
-<button type="button" class="v12btn" data-v12="command">📢 Befehl</button>
-<button type="button" class="v12btn" data-v12="safety">⚠️ Lageänderung</button>
-<button type="button" class="v12btn" data-v12="as">🫁 Atemschutz</button>
-<button type="button" class="v12btn" data-v12="map">🗺️ Lagekarte</button>
-<button type="button" class="v12btn" data-v12="report">📋 Einsatzbericht</button>
+</header><div id="v13QuickOverview" class="v13-overview">
+<div class="v13-title"><strong>⚡ Einsatz-Schnellübersicht</strong></div>
+<div class="v13-grid">
+<button type="button" class="v13-btn" data-v13="lead">🔄 Führung</button>
+<button type="button" class="v13-btn" data-v13="crew">👨‍🚒 Kräfte</button>
+<button type="button" class="v13-btn" data-v13="feedback">📣 Rückmeldungen</button>
+<button type="button" class="v13-btn" data-v13="commands">📢 Befehle</button>
+<button type="button" class="v13-btn" data-v13="as">🫁 Atemschutz</button>
+<button type="button" class="v13-btn" data-v13="safety">⚠️ Lageänderung</button>
+<button type="button" class="v13-btn" data-v13="map">🗺️ Lagekarte</button>
+<button type="button" class="v13-btn" data-v13="report">📋 Einsatzbericht</button>
 </div></div>
 <main>
 
@@ -529,4 +543,87 @@ $("#v12Save")?.addEventListener("click",()=>{
 $("#v12Round").textContent="Führungskreislauf "+v12Round;
 })();
 </script>
-</body></html>
+<script id="v13-functional">
+(function(){
+const q=s=>document.querySelector(s);
+const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}};
+const write=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const trupps=["Angriffstrupp","Wassertrupp","Schlauchtrupp"];
+let names=read("crewNames",{});
+let crew=read("currentCrew",{"Einheitsführer":true,"Melder":true,"Maschinist":true,"Angriffstrupp":true,"Wassertrupp":true,"Schlauchtrupp":true});
+let archive=read("incidentArchive",[]);
+function logV(type,text){
+ const a=read("incidentLog",[]),d=new Date(),st=window.incident?.startedAt?new Date(window.incident.startedAt):null;
+ const ms=st?Math.max(0,d-st):0;
+ const e="+"+String(Math.floor(ms/3600000)).padStart(2,"0")+":"+String(Math.floor(ms/60000)%60).padStart(2,"0")+":"+String(Math.floor(ms/1000)%60).padStart(2,"0");
+ a.push({date:d.toLocaleDateString("de-DE"),time:d.toLocaleTimeString("de-DE"),elapsed:e,type,text});write("incidentLog",a);
+ if(typeof window.renderAll==="function") window.renderAll();
+}
+function modal(title,body,save){
+ const m=document.createElement("div");m.className="v13-modal";
+ m.innerHTML='<div class="v13-sheet"><h3>'+title+'</h3><div>'+body+'</div><div class="v13-actions"><button type="button" class="v13-action" id="v13Cancel">Abbrechen</button><button type="button" class="v13-action ok" id="v13Save">Speichern</button></div></div>';
+ document.body.appendChild(m);m.querySelector("#v13Cancel").onclick=()=>m.remove();m.querySelector("#v13Save").onclick=()=>save(m);
+ return m;
+}
+function openCrew(){
+ let h='<div class="v13-muted">Namen sind optional. Sie werden von Rückmeldungen und Atemschutz übernommen.</div><div class="v13-section">';
+ ["Einheitsführer","Melder","Maschinist"].forEach(r=>h+=`<div class="v13-person"><strong>${r}</strong><input data-role="${r}" value="${(names[r]||"").replace(/"/g,"&quot;")}" placeholder="Name optional"></div>`);
+ trupps.forEach(t=>{h+=`<div class="v13-sub"><strong>${t}</strong>`;
+ ["Truppführer","Truppmann"].forEach(s=>{const k=t+" · "+s;h+=`<div class="v13-person"><strong>${s}</strong><input data-role="${k}" value="${(names[k]||"").replace(/"/g,"&quot;")}" placeholder="Name optional"></div>`});
+ h+="</div>";});h+="</div>";
+ modal("👨‍🚒 Kräfteübersicht",h,m=>{m.querySelectorAll("[data-role]").forEach(i=>names[i.dataset.role]=i.value.trim());write("crewNames",names);logV("Kräfteübersicht geändert","Namen der Einsatzbesetzung aktualisiert.");m.remove()});
+}
+function openFeedback(){
+ let o=["Einheitsführer","Melder","Maschinist"].filter(x=>crew[x]!==false).map(x=>`<option>${x}</option>`);
+ trupps.filter(t=>crew[t]!==false).forEach(t=>{o.push(`<option>${t} – Truppführer</option>`);o.push(`<option>${t} – Truppmann</option>`)});
+ modal("📣 Rückmeldung",`<div class="v13-field"><label>Von wem?</label><select id="vf">${o.join("")}</select></div><div class="v13-field"><label>Art</label><select id="vk"><option>Rückmeldung</option><option>Auftrag erfüllt</option><option>Problem / Unterstützung erforderlich</option><option>Lageänderung</option></select></div><div class="v13-field"><label>Meldung</label><textarea id="vm" placeholder="Kurze Meldung"></textarea></div>`,m=>{
+ const msg=m.querySelector("#vm").value.trim();if(!msg)return alert("Bitte Meldung eingeben.");
+ const a=read("feedbacks",[]);a.push({from:m.querySelector("#vf").value,kind:m.querySelector("#vk").value,text:msg,at:new Date().toISOString()});write("feedbacks",a);logV("Rückmeldung",m.querySelector("#vf").value+": "+msg);m.remove();
+});
+}
+function openAS(){
+ let opts=trupps.filter(t=>crew[t]!==false).map(t=>`<option>${t}</option>`).join("");
+ modal("🫁 Atemschutzüberwachung",`<div class="v13-field"><label>Trupp</label><select id="at"><option value="">Bitte auswählen</option>${opts}</select></div><div class="v13-field"><label>Truppführer</label><input id="atf" required placeholder="Name erforderlich"></div><div class="v13-field"><label>Truppmann</label><input id="atm" required placeholder="Name erforderlich"></div><div class="v13-field"><label>Anfangsdruck</label><input id="ap" inputmode="numeric" placeholder="bar"></div><div class="v13-field"><label>Erwartete Einsatzzeit</label><input id="az" inputmode="numeric" placeholder="Minuten"></div>`,m=>{
+ const t=m.querySelector("#at").value,tf=m.querySelector("#atf").value.trim(),tm=m.querySelector("#atm").value.trim();if(!t||!tf||!tm)return alert("Trupp, Truppführer und Truppmann sind erforderlich.");
+ const a=read("asTeams",[]);a.push({trupp:t,truppfuehrer:tf,truppmann:tm,startPressure:m.querySelector("#ap").value,expectedMinutes:m.querySelector("#az").value,connectedAt:new Date().toISOString(),active:true});write("asTeams",a);logV("Atemschutz","Überwachung gestartet: "+t+" ("+tf+" / "+tm+")");m.remove();
+});
+}
+function openSafety(){
+ modal("⚠️ Lageänderung / Eigene Sicherheit",'<div class="v13-field"><label>Was hat sich geändert?</label><textarea id="ls" placeholder="Neue Gefahr, Personenlage, eigene Kräfte, Ausbreitung ..."></textarea></div>',m=>{
+ const t=m.querySelector("#ls").value.trim();if(!t)return alert("Bitte Lageänderung dokumentieren.");
+ const r=Number(localStorage.getItem("v13Round")||1)+1;localStorage.setItem("v13Round",String(r));logV("Lageänderung / neuer Führungskreislauf","Runde "+r+": "+t);m.remove();
+});
+}
+function openMap(){
+ const map=read("v13Map",{version:0,changes:[]});
+ modal("🗺️ Lagekarte – Lage speichern",`<div class="v13-muted">Gespeicherte Lagekartenstände werden versioniert und in der Chronik dokumentiert.</div><div class="v13-field"><label>Beschreibung der Änderung</label><textarea id="mt" placeholder="Was wurde geändert?"></textarea></div><div class="v13-muted">Letzte Version: ${map.version||0}</div>`,m=>{
+ const t=m.querySelector("#mt").value.trim();if(!t)return alert("Bitte Änderung beschreiben.");
+ map.version=(map.version||0)+1;map.changes.push({version:map.version,description:t,at:new Date().toISOString()});write("v13Map",map);logV("Lagekarte gespeichert","Version "+map.version+": "+t);m.remove();
+});
+}
+function finish(){
+ if(!window.incident)return alert("Kein aktiver Einsatz.");
+ const name=names["Einheitsführer"]||"";
+ const m=modal("⏹ Einsatz beenden",`<div class="v13-muted">Der Einsatz wird nach der Bestätigung archiviert und der aktive Einsatz beendet.</div><div class="v13-field"><label>Name Einheitsführer</label><input id="en" value="${name.replace(/"/g,"&quot;")}" placeholder="Name"></div><div class="v13-field"><label>Unterschrift</label><canvas id="sig" width="600" height="150" style="width:100%;background:#fff;border-radius:8px;touch-action:none"></canvas></div>`,m=>{
+ const n=m.querySelector("#en").value.trim();if(!n)return alert("Bitte Namen eingeben.");
+ const end=new Date().toISOString();archive.push({...window.incident,endedAt:end,leader:n,signature:m.querySelector("#sig").toDataURL("image/png"),incidentLog:read("incidentLog",[]),crew:names,feedbacks:read("feedbacks",[]),commands:read("commands",[]),asTeams:read("asTeams",[]),map:read("v13Map",{version:0,changes:[]})});write("incidentArchive",archive);
+ ["incident","incidentLog","feedbacks","commands","asTeams","v13Map","v13Round"].forEach(k=>localStorage.removeItem(k));alert("Einsatz abgeschlossen und archiviert.");location.reload();
+ });
+ const c=m.querySelector("#sig"),ctx=c.getContext("2d");let down=false,last;
+ c.addEventListener("pointerdown",e=>{down=true;const r=c.getBoundingClientRect();last={x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height};c.setPointerCapture(e.pointerId)});
+ c.addEventListener("pointermove",e=>{if(!down)return;const r=c.getBoundingClientRect(),p={x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height};ctx.strokeStyle="#111";ctx.lineWidth=3;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p});
+ c.addEventListener("pointerup",()=>down=false);c.addEventListener("pointercancel",()=>down=false);
+}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-v13]");if(!b)return;const k=b.dataset.v13;
+ if(k==="crew")openCrew();else if(k==="feedback")openFeedback();else if(k==="as")openAS();else if(k==="safety")openSafety();else if(k==="map")openMap();else if(k==="commands")alert("Bitte den vorhandenen Befehlsbereich verwenden; die Schnellübersicht ist nur der direkte Einstieg.");else if(k==="report"){if(typeof window.renderReport==="function")window.renderReport();setTimeout(()=>window.print(),100)}else if(k==="lead"){document.querySelector("#leadership")?.scrollIntoView({behavior:"smooth"})}
+});
+function addEnd(){
+ if(!window.incident||document.querySelector("#v13End"))return;
+ const host=document.querySelector("main")||document.body,d=document.createElement("div");d.id="v13End";d.className="v13-section";
+ d.innerHTML='<strong>⏹ Einsatzabschluss</strong><div class="v13-muted">Einsatz vollständig dokumentiert? Dann hier beenden.</div><button type="button" class="v13-action danger" id="v13EndButton">⏹ Einsatz beenden</button>';
+ host.appendChild(d);d.querySelector("#v13EndButton").onclick=finish;
+}
+setInterval(addEnd,800);addEnd();
+})();
+</script></body></html>

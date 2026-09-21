@@ -1,14 +1,13 @@
-# Einheitsführer-App v12
+# Einheitsführer-App v13 – Testversion
 
-Funktionsintegrations-Prototyp auf Basis von v11.
+- separates Einsatzcockpit entfernt
+- Einsatz-Schnellübersicht direkt unter der permanenten Einsatzzeile
+- Kräfteübersicht mit Einheitsführer sowie Truppführer/Truppmann und optionalen Namen
+- Rückmeldungen mit Auswahl der meldenden Funktion
+- Atemschutz mit Truppauswahl und Pflichtnamen
+- Lageänderung dokumentiert neuen Führungskreislauf
+- Lagekartenstände versioniert
+- Einsatzabschluss mit Name, Touch-Unterschrift und Archivierung
+- nach Abschluss Rückkehr zum Start
 
-Neu:
-- permanenter Einsatz-Infobalken bleibt erhalten
-- zentrale Einsatz-Cockpit-Schnellaktionen
-- Rückmeldung, Befehl, Lageänderung, Atemschutz, Lagekarte und Bericht sind aus dem Cockpit erreichbar
-- Lageänderungen erzeugen neue Führungskreislauf-Runden und werden in der Chronik dokumentiert
-- Lagekarten-Dokumentationsstände werden versioniert und chronologisch protokolliert
-- Bericht kann direkt aus dem Cockpit gedruckt/PDF-gespeichert werden
-
-Wichtig:
-Diese Version ist noch kein produktionsreifer Einsatzdatenspeicher. Die echte Kartenzeichnung, vollständige Einsatzarchivierung und der endgültige Abschluss-/Unterschriftsworkflow bleiben als nächste Integrationsschritte offen.
+Bitte v13 als Praxistest verwenden. Die vollständige hessische Einsatzstichwort-/Meldebild-Datenbasis und die echte zeichnbare Lagekarte sind noch gesonderte Integrationspunkte.
