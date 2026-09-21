@@ -1,28 +1,14 @@
-# Einheitsführer-App v7
+# Einheitsführer-App v12
 
-Basis: v6.
+Funktionsintegrations-Prototyp auf Basis von v11.
 
-## Neuer Einsatzstart
-Der Einsatzstart ist jetzt die **erste Eingabe** der App. Der Einheitsführer muss zunächst:
-- Einsatzstichwort
-- Einsatzort / Straße
-- PLZ / Ort
-- optional Objekt/Zusatzinformation
-- optional besondere Hinweise
+Neu:
+- permanenter Einsatz-Infobalken bleibt erhalten
+- zentrale Einsatz-Cockpit-Schnellaktionen
+- Rückmeldung, Befehl, Lageänderung, Atemschutz, Lagekarte und Bericht sind aus dem Cockpit erreichbar
+- Lageänderungen erzeugen neue Führungskreislauf-Runden und werden in der Chronik dokumentiert
+- Lagekarten-Dokumentationsstände werden versioniert und chronologisch protokolliert
+- Bericht kann direkt aus dem Cockpit gedruckt/PDF-gespeichert werden
 
-eingeben und den Einsatz starten.
-
-Erst danach öffnet sich die eigentliche Führungsübersicht und der Führungsdialog beginnt mit der Erkundung.
-
-## Weitere Funktionen
-- Einheitsführer statt Gruppenführer
-- Standardbesetzung
-- aktuelle Einsatzbesetzung
-- Atemschutzüberwachung
-- Führungsdialog
-- Befehl
-- Einsatzchronologie
-- konfigurierbarer Fahrzeug-/Funkrufname ohne Fahrzeugdatenbank
-
-Hinweis: Prototyp zur Führungsunterstützung. Keine autonome taktische Entscheidung und keine echte Alarmierungs-/Funkanbindung.
-\n\n### v8\nFehlerbehebung für GitHub Pages/Browser: DOM-Elemente werden explizit angesprochen, sodass „Einsatz starten“ zuverlässig in die Einsatzübersicht wechselt.\n
+Wichtig:
+Diese Version ist noch kein produktionsreifer Einsatzdatenspeicher. Die echte Kartenzeichnung, vollständige Einsatzarchivierung und der endgültige Abschluss-/Unterschriftsworkflow bleiben als nächste Integrationsschritte offen.
