@@ -1,12 +1,12 @@
-# Einheitsführer-App v20
+# Einheitsführer-App v26
 
-Testversion für Feuerwehr Bebra, Hessen.
-
-Änderungen gegenüber v19:
-- Standardbesetzung robuster gespeichert und beim frischen Start aus der Standardbesetzung initialisiert.
-- Trupps in der Standardbesetzung separat an-/abwählbar.
-- Truppführer/Truppmann erscheinen nur bei vorhandenem Trupp und bleiben separat konfigurierbar.
-- Rückmeldungen werden ausschließlich auf Einheits-/Trupp-Ebene erfasst; keine Auswahl von Truppführer oder Truppmann.
-- „Auftrag erfüllt“ beendet den aktuellen Auftrag des ausgewählten Trupps.
-- Gemeinsamer kompakter Verlauf „Auftrag ↔ Rückmeldung“ je Trupp in der Kräfteübersicht.
-- Atemschutz bleibt personenbezogen auf TF/TM.
+Änderung gegenüber v21:
+- Befehlsvorschläge wieder ergänzt:
+  - Menschenrettung durchführen
+  - Brandbekämpfung einleiten
+  - Gefahrenbereich sichern
+  - Ausbreitung verhindern
+  - Rettungsmaßnahmen unterstützen
+  - Freier Entschluss
+- Vorschlag antippen und als Auftrag übernehmen; anschließend kann der Text weiter angepasst werden.
+- Vollständige PWA-Dateien enthalten.
