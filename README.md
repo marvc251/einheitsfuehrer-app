@@ -1,11 +1,12 @@
-# Einheitsführer-App v19
+# Einheitsführer-App v20
 
-Korrektur des Führungskreislaufs: Beim Start eines Einsatzes wird der erste Führungskreislauf sofort mit Erkundung initialisiert. Auch bei älteren/inkonsistenten gespeicherten Daten wird eine fehlende Runde automatisch angelegt. Eine Lageänderung startet weiterhin eine neue Runde bei Erkundung.
+Testversion für Feuerwehr Bebra, Hessen.
 
-
-## v19
-- Einsatzende: harte Sperre bei offenen Aufträgen oder laufender Atemschutzüberwachung
-- Nach Abschluss wird der aktive Einsatz auf null gesetzt
-- Abgeschlossener Einsatz wird vollständig ins Einsatzarchiv verschoben
-- Einsatzarchiv mit Detailansicht für abgeschlossene Einsätze
-- Standardbesetzung bleibt vom Einsatzabschluss getrennt
+Änderungen gegenüber v19:
+- Standardbesetzung robuster gespeichert und beim frischen Start aus der Standardbesetzung initialisiert.
+- Trupps in der Standardbesetzung separat an-/abwählbar.
+- Truppführer/Truppmann erscheinen nur bei vorhandenem Trupp und bleiben separat konfigurierbar.
+- Rückmeldungen werden ausschließlich auf Einheits-/Trupp-Ebene erfasst; keine Auswahl von Truppführer oder Truppmann.
+- „Auftrag erfüllt“ beendet den aktuellen Auftrag des ausgewählten Trupps.
+- Gemeinsamer kompakter Verlauf „Auftrag ↔ Rückmeldung“ je Trupp in der Kräfteübersicht.
+- Atemschutz bleibt personenbezogen auf TF/TM.
