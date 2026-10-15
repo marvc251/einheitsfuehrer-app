@@ -92,7 +92,7 @@ const safetyItems=['Neue Gefahr','Personenlage','Gefährdung eigener Kräfte','A
 function fmtDate(d){return new Date(d).toLocaleDateString('de-DE')}function fmtTime(d){return new Date(d).toLocaleTimeString('de-DE')}function dur(ms){ms=Math.max(0,ms);let s=Math.floor(ms/1000),h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;return `+${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}function stamp(){if(!incident)return{date:'',time:'',elapsed:''};let now=Date.now();return{date:fmtDate(now),time:fmtTime(now),elapsed:dur(now-incident.start)}}
 function addLog(type,text,extra={}){if(!incident)return;logs.unshift({id:Date.now()+Math.random(),type,text,...stamp(),...extra});save('logs',logs)}
 function toast(t){let x=document.getElementById('toast');x.textContent=t;x.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>x.style.display='none',2400)}
-function show(id){if(!incident&&!['start','settings','archive'].includes(id)){id='home'}document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));({home:'navHome',kraefte:'navCrew',feedback:'navFb',doku:'navLog'}[id]&&document.getElementById({home:'navHome',kraefte:'navCrew',feedback:'navFb',doku:'navLog'}[id]).classList.add('active'));renderAll();
+function show(id){if(!incident&&!['start','settings','archive','report'].includes(id)){id='home'}document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));({home:'navHome',kraefte:'navCrew',feedback:'navFb',doku:'navLog'}[id]&&document.getElementById({home:'navHome',kraefte:'navCrew',feedback:'navFb',doku:'navLog'}[id]).classList.add('active'));renderAll();
 initCommandSuggestions();if(id==='lagekarte')setTimeout(initMap,50)}
 function incidentHeader(){let b=document.getElementById('incidentBar');b.classList.toggle('active',!!incident);if(!incident)return;document.getElementById('ibKeyword').textContent=`${incident.keyword} · ${incident.type.toUpperCase()}`;document.getElementById('ibMeldebild').textContent=incident.meldebild||'Meldebild –';document.getElementById('ibLocation').textContent=`📍 ${incident.street}, ${incident.zip} ${incident.city}`;document.getElementById('ibStart').textContent=`🕐 ${fmtTime(incident.start)}`;document.getElementById('ibTimer').textContent=`⏱️ ${dur(Date.now()-incident.start)}`}
 setInterval(incidentHeader,1000);
@@ -173,47 +173,14 @@ function asEnd(id){
   save('asLogs',asLogs);addLog('Atemschutz',`${a.team}: Überwachung beendet · TF ${tf} bar · TM ${tm} bar`);
   renderAll();toast('Überwachung beendet und Druckwerte gespeichert');
 }
-
-function renderStandard(){
-  const root=document.getElementById('standardCrewForm');
-  if(!root)return;
-  let out='';
-  for(const r of roleDefs){
-    const v=standard[r.id]||(standard[r.id]={on:!!r.required,name:''});
-    const checked=v.on?'checked':'';
-    const disabled=r.required?'disabled':'';
-    out+=`<div class="roleCard">
-      <label class="choice"><input type="checkbox" id="st_${r.id}" ${checked} ${disabled} onchange="toggleStandard('${r.id}')"><b>${esc(r.label)}</b>${r.required?' <span class="muted">(Pflicht)</span>':''}</label>`;
-    if(r.team){
-      out+=`<div id="stSubs_${r.id}" style="display:${v.on?'block':'none'};margin-top:8px">`;
-      for(const sub of subDefs){
-        const sv=v[sub.id]||(v[sub.id]={on:false,name:''});
-        out+=`<div class="subindent">
-          <label class="choice"><input type="checkbox" id="st_${r.id}_${sub.id}" ${sv.on?'checked':''}><b>${esc(sub.label)}</b></label>
-          <input id="stName_${r.id}_${sub.id}" value="${escAttr(sv.name||'')}" placeholder="${escAttr(sub.label)} – Name" autocomplete="off">
-        </div>`;
-      }
-      out+='</div>';
-    }else{
-      out+=`<input id="stName_${r.id}" value="${escAttr(v.name||'')}" placeholder="${escAttr(r.label)} – Name" autocomplete="off" style="margin-top:8px" ${v.on?'':'disabled'}>`;
-    }
-    out+='</div>';
-  }
-  root.innerHTML=out;
-}
-
 function toggleStandard(id){
   const cb=document.getElementById('st_'+id);
   const box=document.getElementById('stSubs_'+id);
   if(box)box.style.display=cb?.checked?'block':'none';
-  const singleName=document.getElementById(`stName_${id}`);
-  if(singleName)singleName.disabled=!cb?.checked;
   if(cb&&!cb.checked){
     for(const sub of subDefs){
       const el=document.getElementById(`st_${id}_${sub.id}`);
-      const name=document.getElementById(`stName_${id}_${sub.id}`);
       if(el)el.checked=false;
-      if(name)name.value='';
     }
   }
 }
